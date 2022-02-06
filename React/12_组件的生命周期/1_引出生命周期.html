@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1_引出生命周期</title>
+</head>
+<body>
+  <div id="test"></div>
+  <!-- react 核心库 -->
+  <script src="../js/react.development.js"></script>
+  <!-- 操作dom -->
+  <script src="../js/react-dom.development.js"></script>
+  <!-- jsx转js -->
+  <script src="../js/babel.min.js"></script>
+
+  <script type="text/babel">
+    /** 组件渲染 - 挂载
+     * 挂载 mount
+     * 组件删除 
+     * 卸载 unmount
+     * 生命周期回调函数 <=> 生命周期钩子函数 <=> 生命周期函数 
+    */
+   // 创建组件
+    class Lift extends React.Component {
+
+      // 透明度由1 -> 0
+      state = {
+        opacity: 1
+      }
+      dead = () => {
+        // 页面卸载
+        ReactDOM.unmountComponentAtNode(document.getElementById("test"))
+      }
+      /**组件挂载页面后调用
+       * 这里不用箭头函数是因为这是React里面已经封装好的函数
+      */
+      componentDidMount() {
+        /**点击页面卸载后报错
+         * Warning: Can't perform a React state update on an unmounted component. 
+         * 原因是没有关闭定时器
+         */
+          // 透明度变化
+          this.timer = setInterval(() => {
+          // 设置原状态
+          let {opacity} = this.state
+          // 更改透明度
+          opacity -= 0.1
+          if (opacity <= 0) opacity = 1
+          // 设置新的透明度
+          this.setState({opacity})
+
+          console.log("#")
+        },300)
+      }
+
+      /**
+       * 页面将要卸载
+      */
+     componentWillUnmount() {
+       // 清除定时器
+       clearInterval(this.timer)
+     }
+
+      // 调用时机在初始化渲染, 更新时候调用
+      render(){
+        return (
+          <div>
+            <h2 style={{opacity: this.state.opacity}} >React 为什么这么难学?</h2>
+            <button onClick={this.dead}>我不活了</button>
+          </div>
+        )
+      }
+    }
+
+    ReactDOM.render(<Lift />,document.getElementById("test"))
+  </script>
+</body>
+</html>

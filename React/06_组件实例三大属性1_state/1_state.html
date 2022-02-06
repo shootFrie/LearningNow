@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>state</title>
+</head>
+<body>
+  <div id="container"></div>
+  <script src="../js/react.development.js"></script>
+  <script src="../js/react-dom.development.js"></script>
+  <script src="../js/babel.min.js"></script>
+  <script type="text/babel">
+    // 1.创建组件
+    class Weather extends React.Component {
+      // 构造器调用几次？ -1次
+      constructor(props) {
+        super(props);
+        // 初始化状态
+        this.state = {isHot: true};
+        // this.changeWeather = this.changeWeather.bind(this);
+        // 解决this指向问题
+        this.demo = this.changeWeather.bind(this);
+      }
+      // render调用几次？ - 1+n次
+      render() {
+        // 读取状态
+        const {isHot} = this.state;
+        return (
+          // <h2 onclick="demo()">今天天气{isHot? "炎热": "凉爽"}</h2> 错误
+          // <h2 onclick={demo()}>今天天气{isHot? "炎热": "凉爽"}</h2> 这里一进去就执行
+          <h2 onclick={this.demo}>今天天气{isHot? "炎热": "凉爽"}</h2>
+        )
+      }
+      // 点击一次调用一次
+      changeWeather(){
+        // 这个方法是放在weather原型对象上 ，供实例使用
+        // 通过实例调用，this是实例; 如果单独放没有声明绑定实例this，这里this就是undefined
+        // 类中方法默认开启了局部严格模式，
+        console.log(this); //  undefined
+        // 状态不能随意更改，用内置api修改
+        // this.state.isHot = !this.state.isHot; 
+        // 用react的api修改； 更新是一种合并，不是替换
+        this.setState({isHot: !isHot})
+      }
+    }
+    ReactDOM.render(<Weather />, document.getElementById("container"));
+    function demo () {
+      console.log("被点击了");
+    }
+  </script>
+
+</body>
+</html>

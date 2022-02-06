@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>jsx的小练习</title>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script src="../js/react.development.js"></script>
+  <script src="../js/react-dom.development.js"></script>
+  <script src="../js/babel.min.js"></script>
+
+  <script type="text/babel">
+    /**
+     * 
+     * JS语句和JS表达式的区别
+     *  JS表达式 返回结果，例如
+     *    1.a 变量返回undefined
+     *    2. a.map() 返回数组
+     *    3. function test() {}
+     * 
+     *  JS语句 (代码)       
+     *    1. if(){}
+     *    2. for(){}
+     *    3. switch(){}                                                                                                                                                                          
+    */
+    var data = ["Angular","React", "Vue"];
+    var data2 = [<li>Angular</li>, <li>React</li>, <li>Vue</li>];
+    var obj = {name1: "", name2: "", name3: ""};
+    const VDOM = (
+      <div>
+        <h2>前端js框架列表</h2>
+        <p>数组形式： {data}</p>
+        <p>数组中增加框架形式：</p>
+        <ul>
+          {data2}  
+        </ul>
+        <p> obj 对象直接报错 Objects are not valid as a React child  </p>
+        <ul>
+          {
+            // 这里写JS表达式
+            data.map((item, index) => {
+              return <li key={index}>{item}</li>
+            })
+          }
+        </ul>
+      </div>
+    )
+
+    ReactDOM.render(VDOM, document.getElementById("app"));
+  </script>
+</body>
+</html>

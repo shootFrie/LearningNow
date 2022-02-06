@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="contain"></div>
+
+  <script src="../js/react.development.js"></script>
+  <script src="../js/react-dom.development.js"></script>
+  <script src="../js/babel.min.js"></script>
+
+  <script type="text/babel">
+    // 1.创建函数式编程 函数定义的组件
+    // function demo(){
+    //   return <h2>我是用函数定义的组件（适用于【简单组件】的定义）</h2>
+    // }
+    function Demo(){
+      return <h2>我是用函数定义的组件（适用于【简单组件】的定义）</h2>
+    }
+
+    // 2.渲染组件页面
+    // ReactDOM.render(demo, document.getElementById('contain'));
+    // 报错 Functions are not valid as a React child. 要变成组件
+
+    // ReactDOM.render(<demo />, document.getElementById('contain'));
+    // Warning: The tag <demo> is unrecognized in this browser. 
+    
+      // 若小写字母开头，则改标签转为html中同名标签，若html中无该标签对于的同名元素，则报错
+      ReactDOM.render(<Demo />,  document.getElementById('contain'));
+      /**
+       * 执行  ReactDOM.render(<Demo />,  document.getElementById('contain')); 之后发生了什么
+       * 1.React解析组件标签，找到Demo组件。
+       * 2.发现组件时使用函数定义的，随后调用该函数，将返回的虚拟DOM转为真实DOM,随后呈现在页面中
+      */
+  </script>
+</body>
+</html>

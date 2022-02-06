@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1_类的基本知识</title>
+</head>
+<body>
+  <script>
+    /**
+     * 总结
+     * 1.类中的构造器不是必须写的，要对实例进行初始化操作，如添加指定属性时才写
+     * 2.A类继承B类，且A 类写了构造器，A类构造器必须调用super
+     * 3、类所使用的方法都是放在类的原型对象上
+    */
+
+    // 创建类
+    class Person {
+      // 构造器方法
+      constructor(name, age) {
+        // 构造器中的this - 类的实例对象
+        this.name = name;
+        this.age = age;
+      }
+      // 一般方法
+      speak(){
+        // speak 方法放在了类的原型对象上，给实例使用
+        // 通过Person实例调用speak时，speak的this就是Person实例
+        console.log(`我是${this.name}, 我的年龄是${this.age}`);
+      }
+    }
+
+    // // 创建实例对象
+    // const p1 = new Person('tom', 19);
+    // p1.speak();
+    // p1.speak().call({a:1,b:2}); // undefined this指向换了
+
+    // 创建一个Student 类，继承Person
+    class Student extends Person{
+      constructor(name,age,grade){
+        super(name,age); //继承父类属性，必须放在最前面
+        this.grade = grade; //新增属性
+      }
+
+      // 重写父类方法
+      speak(){
+        console.log(`我是${this.name}, 我的年龄是${this.age}, 我是${this.grade}`);
+      }
+      // 子类独有方法
+      study(){
+        console.log("努力学习");
+      }
+    }
+
+    const p2 = new Student("shaw","23","one");
+    p2.speak();
+    p2.study();
+
+    // 属性的简单写法
+    class Car {
+      constructor(name){
+        this.name = name;
+      }
+      wheel = 4;
+      // 给类本身加demo属性
+      static demo = 100
+    }
+    var car1 = new Car("ES6");
+    //Car.demo = 100; //这是给实例加，拿也要Car.demo拿
+    
+    console.log(car1);
+  </script>
+</body>
+</html>

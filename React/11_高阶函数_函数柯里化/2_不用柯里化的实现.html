@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2_不用柯里化的实现</title>
+</head>
+<body>
+  <!-- 容器 -->
+  <div id="test"></div>
+  <!-- react 核心库  -->
+  <script src="../js/react.development.js"></script>
+  <!-- 操纵dom -->
+  <script src="../js/react-dom.development.js"></script>
+  <!-- jsx 转 js -->
+  <script src="../js/babel.min.js"></script>
+  <script type="text/babel">
+    // 类组件
+    class Login extends React.Component {
+      state = {
+        userName: '', // 用户名
+        password: '' 
+      }
+
+      saveFormData = (dataType, value) => {
+        this.setState({[dataType]: value})
+      }
+      handleSubmit = () => {
+        const {userName, password} = this.state
+        event.preventDefault();
+        alert(`
+          账号${userName},
+          密码${password}
+        `)
+      }
+      render(){
+        return (
+          <form onSubmit={this.handleSubmit}>
+            用户名: <input type="text" onChange={(event) => {this.saveFormData('userName', event.target.value)}} />
+            密码: <input type="password" onChange={(event) => {this.saveFormData('password', event.target.value)}} />
+            <button>登陆</button>
+          </form>
+        )
+      }
+    }
+
+    ReactDOM.render(<Login />, document.getElementById('test'));
+  </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>createRef</title>
+</head>
+<body>
+  <div id="contain"></div>
+  <!-- react 核心库 -->
+  <script src="../js/react.development.js"></script>
+  <!-- react 操作dom -->
+  <script src="../js/react-dom.development.js"></script>
+  <!-- jsx转换js -->
+  <script src="../js/babel.min.js"></script>
+  <script type="text/babel">
+    // 创建组件
+    class Demo extends React.Component {
+      /**
+       * React.createRef 调用后可以返回一个容器，该容器可以存储被ref所标识的节点
+       * 容器“专人专用”，一个容器只能存一个
+      */
+     myRef = React.createRef()
+     myRef2 = React.createRef()
+     state = {isShow: false}
+     showData = () => {
+       const {isShow} = this.state
+       console.log("createRef拿到的 {current}", this.myRef.current);
+       this.setState({isShow : !isShow})
+     }
+
+     BlurShow = () => {
+       alert(this.myRef2.current.value);
+     }
+     
+     render() {
+       return (
+         <div>
+          <input type="text" ref={this.myRef} placeholder="点右边按钮显示"/> 
+          <button onClick={this.showData}>点我显示左侧的数据</button>
+          <span>{this.state.isShow ? this.myRef.current.value : ""}</span>
+          <input placeholder="失焦显示" type="text" ref={this.myRef2} onBlur={this.BlurShow}/>
+         </div>
+       )
+     }
+    }
+    ReactDOM.render(<Demo />, document.getElementById("contain"));
+  </script>
+</body>
+</html>

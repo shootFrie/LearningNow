@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>事件处理</title>
+</head>
+<body>
+  <div id="contain"></div>
+  <!-- react 核心库 -->
+  <script src="../js/react.development.js"></script>
+  <!-- react 操作 DOM -->
+  <script src="../js/react.development-dom.js"></script>
+  <!-- jsx 转 js -->
+  <script src="../js/babel.min.js"></script>
+
+  <script type="text/babel">
+    /**
+     * (1).通过onXxxx属性指定事件处理函数（注意大小写）
+     *   a. React 使用自定义事件，而不是原生DOM事件 --- 兼容性
+     *   b. React中的事件是通过事件委托方式处理的（委托给最外层的元素）事件冒泡
+     * (2).通过event.target得到发生事件的DOM元素对象
+     * */ 
+    // 类组件
+    class Demo extends React.Component {
+      // ref容器创建
+      myRef = React.createRef
+      showDate = () => {
+        alert(this.myRef.current.value)
+      }
+      BlurShow = (event) => {
+        // 不要过度使用ref
+        alert(event.target.value)
+      }
+      render () {
+        return (
+          <div>
+            <input ref={myRef} type="text" placeholder="点击右边按钮获取值"/>
+            <button onClick={this.showDate}>点击左侧值显示</button>
+            <input type="text" onBlur={this.BlurShow} />
+          </div>
+        )
+      }
+    }
+
+    ReactDOM.render(<Demo />, document.getElementById("contain"));
+  </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4_函数式组件使用props</title>
+</head>
+<body>
+  <div id="contain"></div>
+  <!-- react核心库 -->
+  <script src="../js/react.development.js"></script>
+  <!-- react dom渲染 -->
+  <script src="../js/react-dom.development.js"></script>
+  <!-- props 对组件标签属性进行限制 -->
+  <script src="../js/prop-types.js"></script>
+  <!-- 将jsx 转换为js -->
+  <script src="../js/babel.min.js"></script>
+  <script type="text/babel">
+    function Person(props){
+      const {name, age, sex} = props;
+      
+      return (
+        <ul>
+          <li>name: {name}</li>
+          <li>age: {age + 1}</li>
+          <li>sex: {sex}</li>
+        </ul>
+      )
+    }
+
+    // 函数式组件没有static可以放在函数内部
+    Person.propTypes = {
+      name: PropTypes.string.isRequired,
+      age: PropTypes.number,
+      sex: PropTypes.string
+    }
+
+    Person.defaultProps = {
+      sex: "女"
+    }
+
+    ReactDOM.render(<Person name="Shaw" age={45} />, document.getElementById("contain"));
+  </script>                                                                                                                                                                                                                                                                                                                              
+</body>
+</html>

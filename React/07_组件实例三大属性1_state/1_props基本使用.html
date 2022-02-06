@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1_props基本使用</title>
+</head>
+<body>
+  <div id="contain"></div>
+  <div id="TEST2"></div>
+  <div id="TEST1"></div>
+  <script src="../js/react.development.js"></script>
+  <script src="../js/react-dom.development.js"></script>
+  <script src="../js/babel.min.js"></script>
+  <!-- 引入prop-types，用于对组件标签属性进行限制 -->
+  <script src="../js/prop-types.js"></script>
+
+  <script type="text/babel">
+    class Person extends React.Component {
+      render(){
+        const {name,age,sex} = this.props
+        return (
+          <ul>
+            <li>姓名： {name}</li>
+            <li>年龄： {age + 1}</li>
+            <li>性别： {sex}</li>
+          </ul>
+        )
+      }
+    }
+    // 必输
+    Person.propTypes = {
+        // name : React.PropType.string 15.x以上没有引用prop-type 会报错
+        name: PropTypes.string.isRequired, // 必须传的
+        sex: PropTypes.string
+      }
+    // 默认值
+    Person.default = {
+      sex: "无",
+      age: 18
+    }
+    ReactDOM.render(<Person name="shaw" age="34" sex="female"/>, document.getElementById("contain"));
+    // 这里用双引号表示字符，+1就会字符加；用{}就是js语句
+    ReactDOM.render(<Person name="ROOT" age={32} sex="female"/>, document.getElementById("TEST2"));
+    // ReactDOM.render(<Person name="RESSES" age="37" sex="male"/>, document.getElementById("TEST1"));
+    const nm = {name: "RESSES", age:37, sex:"male"};
+    ReactDOM.render(<Person {...nm}/>, document.getElementById("TEST1"));
+  </script>
+</body>
+</html>

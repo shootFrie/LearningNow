@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2_受控组件</title>
+</head>
+<body>
+  <!-- 容器 -->
+  <div id="test"></div>
+  <!-- react核心库 -->
+  <script src="../js/react.development.js"></script>
+  <!-- react-dom dom操作 -->
+  <script src="../js/react-dom.development.js"></script>
+  <!-- jsx转js -->
+  <script src="../js/babel.min.js"></script>
+  <script type="text/babel">
+    // 受不受控取决于value受state控制还是dom控制
+    // 创建组件
+    class Login extends React.Component {
+      // 初始化
+      state = {
+        userName : "",
+        password: ""
+      }
+
+      // 保存用户密码
+      saveUserName = (event) => {
+        this.setState({userName: event.target.value})
+      }
+
+      savePassword = (event) => {
+        this.setState({password: event.target.value})
+      }
+
+      // 提交
+      handleSubmit = (event) => {
+        event.preventDefault() // 阻止默认事件
+        const {userName, password} = this.state
+        alert(`
+          账号是${userName}
+          密码是${password}
+        `)
+      }
+      render(){
+        return (
+          <form onSubmit={this.handleSubmit}>
+            用户名： <input type="text" onChange={this.saveUserName} />
+            密码： <input type="password" onChange={this.savePassword} />
+            <button>登陆</button>
+          </form>
+        )
+      }
+    }
+    ReactDOM.render(<Login />, document.getElementById("test"));
+  </script>
+</body>
+</html>

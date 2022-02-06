@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1_非受控组件</title>
+</head>
+<body>
+  <div id="test"></div>
+  
+  <!-- react 核心库 -->
+  <script src="../js/react.development.js"></script>
+  <!-- react 操作 DOM -->
+  <script src="../js/react-dom.development.js"></script>
+  <!-- jsx 转 js -->
+  <script src="../js/babel.min.js"></script>
+  
+  <script type="text/babel">
+    /**
+     * 非受控组件，所见即所得
+    */
+    // 创建组件
+    class Login extends React.Component {
+      handleSubmit = (event) => {
+        event.preventDefault(); // 阻止表单提交
+        const {username, pwd} = this
+        alert(`
+          用户名： ${username.value}, 
+          密码： ${pwd.value}
+        `)
+      }
+      render(){
+        // <form action="http://www.baidu.com" onSubmit={this.handleSubmit}>
+          /**
+           * action 删除后页面仍然会刷新一遍，action是将表单数据提交地址
+           * 要阻止默认事件发生
+          */
+        return (
+          <form onSubmit={this.handleSubmit}>
+            用户名： <input ref={c => this.username = c} type="text" />
+            密码： <input ref={c => this.pwd = c} type="password" /> 
+            <button>登陆</button>  
+          </form>
+        )
+      }
+    }
+    ReactDOM.render(<Login />, document.getElementById("test"));
+  </script>
+</body>
+</html>

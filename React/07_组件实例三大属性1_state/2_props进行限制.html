@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2_props进行限制</title>
+</head>
+<body>
+  <div id="contain"></div>
+  <!-- 引入核心库 -->
+  <script src="../js/react.development.js"></script>
+  <!-- 引入渲染dom -->
+  <script src="../js/react-dom.development.js"></script>
+  <!-- 对组件标签属性进行限制 -->
+  <script src="../js/prop-types.js"></script>
+  <!-- 将jsx转换为js的babel -->
+  <script src="../js/babel.min.js"></script>
+
+  <script type="text/babel">
+    // 类组件
+    class Person extends React.Component {
+      // 构造器
+      constructor(props){
+        // 这里props可以不拿,但是有些版本会变成undefined
+        super(props);
+        console.log("constructor",this.props); //{name:xx}
+      }
+
+      render () {
+        const {name, age, sex} = this.props;
+        return (
+          <ul>
+            <li>name : {name} </li>
+            <li>age: {age + 1}</li>
+            <li>sex: {sex}</li>
+          </ul>
+        )
+      }
+
+    }
+
+    // 对标签属性进行类型、必要性限制
+    Person.propTypes = {
+      name: PropTypes.string.isRequired, // 限制name必传，为string
+      age: PropTypes.number, // 限制age为数字
+      sex: PropTypes.string,
+      speak: PropTypes.func // 函数
+    }
+    // 指定默认标签属性值
+    Person.defaultProps = {
+      sex: "男" // 默认值
+    }
+
+    // 渲染组件到页面
+    ReactDOM.render(<Person name="John" age={13} speak = {speak}/>, document.getElementById('contain'));
+
+    function speak(){
+      console.log("say hi");
+    }
+  </script>
+</body>
+</html>

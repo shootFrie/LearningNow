@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3_props简写</title>
+</head>
+<body>
+  <!-- 容器 -->
+  <div id="contain"></div>
+  <!-- 引入核心库 -->
+  <script src="../js/react.development.js"></script>
+  <!-- 渲染DOM -->
+  <script src="../js/react-dom.development.js"></script>
+  <!-- 对组件标签属性进行限制 -->
+  <script src="../js/prop-types.js"></script>
+  <!-- 将jsx转换js -->
+  <script src="../js/babel.min.js"></script>
+  <script type="text/babel">
+    // 类组件
+    class Person extends React.Component{
+      constructor(){
+      //constructor(props){
+        // 不传入props，无法在构造器中访问this
+        super();
+        console.log("constructor", this.props); // undefined
+      }
+      /**类相当于实例的原型, 所有在类中定义的方法, 都会被实例继承。
+       * 如果在一个方法前,加上Static关键字,
+       * 就表示该方法不会被继承,而是直接通过类来调用,这被称为 “静态方法”
+       * */
+      static propTypes = {
+        name: PropTypes.string.isRequired,
+        age: PropTypes.number,
+        sex: PropTypes.string
+      }
+
+      static defaultProps = {
+        sex: "男"
+      }
+      render(){
+        const {name, age, sex} = this.props
+        // props 只能读不能改
+        // this.props.name = "cc" 会报错
+        return (
+          <ul>
+            <li>name: {name}</li>
+            <li>age: {age + 1}</li>
+            <li>sex: {sex}</li>
+          </ul>
+        )
+      }
+    }
+
+    ReactDOM.render(<Person name="John Snow" age={39}/>, document.getElementById("contain"))
+
+  </script>
+</body>
+</html>

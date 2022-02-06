@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1_字符串形式的ref</title>
+</head>
+<body>
+  <div id="contain"></div>
+  <!-- 核心库 -->
+  <script src="../js/react.development.js"></script>
+  <!-- dom渲染 -->
+  <script src="../js/react-dom.development.js"></script>
+  <!-- jsx转换js -->
+  <script src="../js/babel.min.js"></script>
+
+  <script type="text/babel">
+    class Demo extends React.Component {
+      inpClick = () => {
+        console.log("第一个输入框的值：",this.refs.input1.value);
+      }
+      inpBlur = () => {
+        console.log("失去焦点获得的值：", this.refs.input2.value);
+      }
+      render(){
+        return (
+          <div>
+            <input ref="input1" type="text"  placeholder="点击后执行"/>
+            <button onClick={this.inpClick}>点击</button>
+            <input ref="input2" onBlur={this.inpBlur} type="text" placeholder="失焦后执行" />
+          </div>
+         
+        )
+      }
+    }
+
+    ReactDOM.render(<Demo />, document.getElementById("contain"))
+  </script>
+</body>
+</html>

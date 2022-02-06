@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3_虚拟DOM和真实DOM</title>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="demo">真实DOM</div>
+
+  <script src="../js/react.development.js"></script>
+  <script src="../js/react-dom.development.js"></script>
+
+  <script type="text/javascript">
+    // 1. 创建虚拟DOM 
+    // const VDOM = React.createElement(标签名, 标签属性, 标签内容);
+    const VDOM = React.createElement("h1", {id: 'title', class: "clName"}, "你好");
+    // 2.渲染到页面
+    ReactDOM.render(VDOM, document.getElementById("app"));
+
+    const TDOM = document.getElementById("demo");
+    console.log("虚拟DOM", VDOM);
+    console.log("真实DOM", TDOM); // 输出标签
+    debugger; // 断点可以看到属性
+    console.log("typeof VDOM", typeof VDOM);
+    console.log("VDOM instanceof Object", VDOM instanceof Object);
+
+    /**
+     * 关于虚拟DOM：
+     * 1. 本质是Object类型的对象（一般对象）
+     * 2. 虚拟DOM比较“轻”（属性少）；真实DOM比较“重”； 因为虚拟DOM是React的内部在用，无需真实DOM上那么多属性
+     * 3. 虚拟DOM最终会被React转化为真实DOM，呈现在页面上
+    */
+  </script>
+</body>
+</html>
