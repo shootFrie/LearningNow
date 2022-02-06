@@ -16,16 +16,16 @@
   <script type="text/javascript">
     // 1. 创建虚拟DOM 
     // const VDOM = React.createElement(标签名, 标签属性, 标签内容);
-    const VDOM = React.createElement("h1", {id: 'title', class: "clName"}, "你好");
+    const VDOM = React.createElement("h1", {id: 'title', className: "clName"}, "你好");
     // 2.渲染到页面
     ReactDOM.render(VDOM, document.getElementById("app"));
 
     const TDOM = document.getElementById("demo");
-    console.log("虚拟DOM", VDOM);
+    console.log("虚拟DOM", VDOM); // Object
     console.log("真实DOM", TDOM); // 输出标签
     debugger; // 断点可以看到属性
-    console.log("typeof VDOM", typeof VDOM);
-    console.log("VDOM instanceof Object", VDOM instanceof Object);
+    console.log("typeof VDOM", typeof VDOM); // Object
+    console.log("VDOM instanceof Object", VDOM instanceof Object); // true
 
     /**
      * 关于虚拟DOM：

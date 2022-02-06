@@ -1,15 +1,16 @@
 <!-- toc -->
 - [React笔记](#react笔记)
-  - [简介及入门](#简介及入门)
-    - [入门基础](#入门基础)
-  - [组件](#组件)
-    - [组件的定义](#组件的定义)
-    - [组件三大核心属性](#组件三大核心属性)
-    - [React 元素渲染（JSX）](#react-元素渲染jsx)
-      - [JSX](#jsx)
-  - [事件处理](#事件处理)
-  - [生命周期](#生命周期)
-  - [JSX_style 样式](#jsx_style-样式)
+	- [简介及入门](#简介及入门)
+		- [入门基础](#入门基础)
+		- [jsx](#jsx)
+		- [JSX_style 样式](#jsx_style-样式)
+	- [组件](#组件)
+		- [组件的定义](#组件的定义)
+		- [组件三大核心属性](#组件三大核心属性)
+		- [React 元素渲染（JSX）](#react-元素渲染jsx)
+			- [JSX](#jsx-1)
+	- [事件处理](#事件处理)
+	- [生命周期](#生命周期)
 - [创建项目](#创建项目)
 # React笔记
 ## 简介及入门
@@ -28,28 +29,182 @@
    - 原生Javascript代码复用率低
 ### 入门基础
   1. HelloWorld
-   ```
-    <body>
-      <!-- 容器 -->
-      <div id="app"></div>
-      <!-- 引入React核心库 -->
-      <script src="../js/react.development.js"></script>
-      <!-- react-dom 支持react操作DOM -->
-      <script src="../js/react-dom.development.js"></script>
-      <!-- 引入将jsx转换为js的babel -->
-      <script src="../js/babel.min.js"></script>
-
-      <script type="text/babel"> // 说明这部分下的是jsx，需要用babel转换
-        // 创建虚拟DOM
-        var VDOM = <h1>Hi,React</h1>
-        // ReactDOM.render(虚拟DOM, 容器);
-        // 渲染虚拟DOM到页面
-        ReactDOM.render(VDOM, document.getElementById("app"));
-      </script>
-    </body>
-   ```
+```
+<body>
+	<!-- 容器 -->
+	<div id="app"></div>
+	<!-- 引入React核心库 -->
+	<script src="../js/react.development.js"></script>
+	<!-- react-dom 支持react操作DOM -->
+	<script src="../js/react-dom.development.js"></script>
+	<!-- 引入将jsx转换为js的babel -->
+	<script src="../js/babel.min.js"></script>
+	<script type="text/babel"> // 说明这部分下的是jsx，需要用babel转换
+		// 创建虚拟DOM
+		var VDOM = <h1>Hi,React</h1>
+		// ReactDOM.render(虚拟DOM, 容器);
+		// 渲染虚拟DOM到页面
+		ReactDOM.render(VDOM, document.getElementById("app"));
+	</script>
+</body>
+```
   2. 虚拟DOM的两种创建方式
-  3. jsx
+  - jsx - 虚拟DOM直接标签输出
+```  
+	<script type="text/babel"> // 此处一定要写babel  
+		// 1.创建虚拟DOM; jsx创建
+		const VDOM = <h1 id="show">这里不能写引号</h1>;
+		// 2渲染虚拟DOM到页面
+		ReactDOM.render(VDOM, document.getElementById("contain"));
+	</script>
+```
+  - js - React创建标签
+```
+	<script type="text/javascript">
+		// 1. 创建虚拟DOM 
+		// const VDOM = React.createElement(标签名, 标签属性, 标签内容);
+		const VDOM = React.createElement("h1", {id: 'title', class: "clName"}, "你好");
+		// 2.渲染到页面
+		ReactDOM.render(VDOM, document.getElementById("app"));
+	</script>
+```
+3.虚拟DOM和真实DOM区别
+```
+<body>
+	<div id="app"></div>
+	<div id="demo">真实DOM</div>
+
+	<script src="../js/react.development.js"></script>
+	<script src="../js/react-dom.development.js"></script>
+
+	<script type="text/javascript">
+		// 1. 创建虚拟DOM 
+		// const VDOM = React.createElement(标签名, 标签属性, 标签内容);
+		const VDOM = React.createElement("h1", {id: 'title', className: "clName"}, "你好");
+		// 2.渲染到页面
+		ReactDOM.render(VDOM, document.getElementById("app"));
+
+		const TDOM = document.getElementById("demo");
+		console.log("虚拟DOM", VDOM); // Object
+		console.log("真实DOM", TDOM); // 输出标签
+		debugger; // 断点可以看到属性
+		console.log("typeof VDOM", typeof VDOM); // Object
+		console.log("VDOM instanceof Object", VDOM instanceof Object); // true
+
+		/**
+		* 关于虚拟DOM：
+		* 1. 本质是Object类型的对象（一般对象）
+		* 2. 虚拟DOM比较“轻”（属性少）；真实DOM比较“重”； 因为虚拟DOM是React的内部在用，无需真实DOM上那么多属性
+		* 3. 虚拟DOM最终会被React转化为真实DOM，呈现在页面上
+		*/
+	</script>
+</body>
+```
+### jsx
+**jsx语法规则：**
+  1. 定义虚拟DOM时不要写引号
+  2. **标签中混入js表达式**时，要用花括号{};不要有双引号
+  3. 样式类名指定要用className
+  4. 内联样式双花括号{{}}的形式，对象形式； 要用style={{key:value}}的形式写
+  5. 只有一个根节点
+  6. 标签必须闭合
+  7. 标签首字母
+   - 若小写字母开头，则改标签转为html中同名标签，若html中无该标签对于的同名元素，则报错
+   - 若大写字母开头，react就去渲染对应的组件，若组件没有定义，则报错
+```
+const atId = "ATGUIgu";
+const spanId = "spanUU";
+// 1. 创建虚拟DOM
+const VDOM = (
+	<div>
+		<h2 id={atId.toLowerCase()} className="titlebg">
+			<span style={{fontSize: '20px'}}>hello {spanId.toUpperCase()}</span>  
+		</h2>
+		<input type="text" />
+		<Good>1234</Good>
+	</div>
+);
+// 2.渲染虚拟DOM到页面
+ReactDOM.render(VDOM, document.getElementById("app"));
+```
+**注：js表达式与js语句**
+- 表达式会返回值，语句为了进行某项操作，不返回值
+* JS语句和JS表达式的区别
+     *  JS表达式 返回结果，例如
+     *    1.a  // 变量，返回undefined
+     *    2. a+b
+     *    3. a.map() 返回数组
+     *    4. function test() {}
+     * 
+     *  JS语句 (代码)       
+     *    1. if(){}
+     *    2. for(){}
+     *    3. switch(){} 
+
+react 循环默认循环数组，不能循环object
+```
+var data = ["Angular","React", "Vue"]; // JS语句
+var data2 = [<li>Angular</li>, <li>React</li>, <li>Vue</li>];
+var obj = {name1: "", name2: "", name3: ""};
+const VDOM = (
+	<div>
+		<h2>前端js框架列表</h2>
+		<p>数组形式： {data}</p>
+		<p>数组中增加框架形式：</p>
+		<ul>
+			{data2}  
+		</ul>
+		<p> obj 对象直接报错 Objects are not valid as a React child  </p>
+		<ul>
+			{
+				// 这里写JS表达式
+				data.map((item, index) => {
+					return <li key={index}>{item}</li>
+				})
+			}
+		</ul>
+	</div>
+)
+
+ReactDOM.render(VDOM, document.getElementById("app"));
+
+```
+
+### JSX_style 样式
+- 不能重复写，比如同一标签不能有两个style
+- 不能是语句，比如 style 中是变量，不能直接 height:40px;
+- 表达式可以放数组，可以加空格
+
+```javascript
+// 样式，style 是驼峰法命名，或双引号
+let expampleStyle = {
+	background: 'skyblue',
+	borderBottom: "1px solid red",
+	'background-imag': "url('')"
+}
+// 写法一：style,只有一个样式
+let element = (
+	<div>
+		<h1 style={expampleStyle}>helloworld</h1>
+	</div>
+)
+
+// 写法二： className
+let classStr = "redBg"  //样式名
+//写法三： 数组
+let classStr1 = ["redBg", "active"].join(" ") //redBg active
+
+let element2 = (
+	<div>
+		{/** 这里写注释*/}
+		<h1 class={classStr}>this is a new class</h1>
+		<h1 class={"abc "+classStr}>再加一个样式，加个空格</h1>
+		<h1 class={classStr1}>this is a new class</h1>
+	</div>
+)
+
+```
+
    
 ## 组件
 ### 组件的定义
@@ -140,40 +295,6 @@ setInterval(run, 1000)
 
 ## 事件处理
 ## 生命周期
-## JSX_style 样式
-- 不能重复写，比如同一标签不能有两个style
-- 不能是语句，比如 style 中是变量，不能直接 height:40px;
-- 表达式可以放数组，可以加空格
-
-```javascript
-// 样式，style 是驼峰法命名，或双引号
-let expampleStyle = {
-	background: 'skyblue',
-	borderBottom: "1px solid red",
-	'background-imag': "url('')"
-}
-// 写法一：style,只有一个样式
-let element = (
-	<div>
-		<h1 style={expampleStyle}>helloworld</h1>
-	</div>
-)
-
-// 写法二： className
-let classStr = "redBg"  //样式名
-//写法三： 数组
-let classStr1 = ["redBg", "active"].join(" ") //redBg active
-
-let element2 = (
-	<div>
-		{/** 这里写注释*/}
-		<h1 class={classStr}>this is a new class</h1>
-		<h1 class={"abc "+classStr}>再加一个样式，加个空格</h1>
-		<h1 class={classStr1}>this is a new class</h1>
-	</div>
-)
-
-```
 
 
 # 创建项目
