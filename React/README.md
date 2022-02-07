@@ -7,11 +7,11 @@
 	- [组件](#组件)
 		- [组件的定义](#组件的定义)
 		- [组件三大核心属性](#组件三大核心属性)
-		- [React 元素渲染（JSX）](#react-元素渲染jsx)
-			- [JSX](#jsx-1)
 	- [事件处理](#事件处理)
 	- [生命周期](#生命周期)
 - [创建项目](#创建项目)
+		- [React 元素渲染（JSX）](#react-元素渲染jsx)
+			- [JSX](#jsx-1)
 # React笔记
 ## 简介及入门
   React 是构建用户界面的 Javascript 库，小巧而复杂，主要用于构建 UI 界面。Facebook研发的，后来用于Instagram，2013年开源。  
@@ -131,7 +131,7 @@ ReactDOM.render(VDOM, document.getElementById("app"));
 - 表达式会返回值，语句为了进行某项操作，不返回值
 * JS语句和JS表达式的区别
      *  JS表达式 返回结果，例如
-     *    1.a  // 变量，返回undefined
+     *    1. a  // 变量，返回undefined
      *    2. a+b
      *    3. a.map() 返回数组
      *    4. function test() {}
@@ -208,18 +208,114 @@ let element2 = (
    
 ## 组件
 ### 组件的定义
-	- 函数式组件
-	- 类式组件
+- 函数式组件
+```
+<script type="text/babel">
+	function Demo(){
+		return <h2>我是用函数定义的组件（适用于【简单组件】的定义）</h2>
+	}
+	// 若小写字母开头，则改标签转为html中同名标签，若html中无该标签对于的同名元素，则报错
+	ReactDOM.render(<Demo />,  document.getElementById('contain'));
+</script>
+```
+- 类式组件
+```
+<script type="text/babel">
+    // 1. 创建类式组件
+    // 继承父类；render； 返回值
+    class MyComponent extends React.Component{
+      render(){
+        // render 是放在 MyComponent 的实例对象上
+        // render中 的this是  MyComponent 的实例对象；（关注props，refs，state）；又叫 MyComponent 组件实例对象
+        console.log("render的this对象",this);
+        return <h2>我是类定义的组件（适用于【复杂组件】的定义）</h2>
+      }
+    }
+    // 2.渲染组件到页面
+    ReactDOM.render(<MyComponent />, document.getElementById("contain"));
+  </script>
+```
+执行  ReactDOM.render(<Demo />,  document.getElementById('contain')); 之后发生了什么
+1 React解析组件标签，找到Demo组件。
+2 发现组件时使用函数定义的，随后new出来该类的实例，并通过实例调用到原型上的render方法
+3 将返回的虚拟DOM转为真实DOM,随后呈现在页面中
 ### 组件三大核心属性
-	- state-组件内变量
-  	- 基本使用
-	- props-父传子
-  	- 基本使用和传值限制
-	- refs与事件处理
-  	- 字符串形式（不被推荐但能用-效能不高）
-  	- 回调函数形式 （内联函数更新时会调用两次，可忽略）
-  	- createRef （最推荐）
+- state-组件内变量
+	- 基本使用
+- props-父传子
+	- 基本使用和传值限制
+- refs与事件处理
+	- 字符串形式（不被推荐但能用-效能不高）
+	- 回调函数形式 （内联函数更新时会调用两次，可忽略）
+	- createRef （最推荐）
 
+
+
+## 事件处理
+## 生命周期
+
+
+# 创建项目
+ 1.	通过 script 引入使用，仅用于学习调试
+   
+   ```javascript
+   <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+   <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+   ```
+ 2.	通过 react 脚手架，创建项目进行开发，部署  
+ 官方文档：[https://react.docschina.org/docs/create-a-new-react-app.html#create-react-app](https://react.docschina.org/docs/create-a-new-react-app.html#create-react-app)
+   
+	```javascrpt
+	1. 安装脚手架 create react app
+	
+	cnpm install -g create-react-app
+	如果能翻墙就用 npm
+	注：cnpm没有就先
+	npm install -g cnpm --registry=https://registry.npm.taobao.org
+	cnpm -v 检查
+	报错就将cnpm 放入 path 环境变量中
+	
+	2. 创建项目
+	
+	create-react-app 01reactapp(项目名称)
+	// 创建时间较长
+	
+	//运行
+	npm start
+	```
+
+	**目录结构**
+	- public  
+		- index.html id="root"  渲染在页面
+		- manifest.json pwa 渐进式框架，只有部分谷歌能实现这样的功能
+		  - pwa 渐进式web应用，可以生成桌面小图标，不需要打开浏览器
+		  - 通过网络缓存提升页面访问速度，达到渐进式的页面甚至离线访问，提升用户体验
+		  - 实现类似app的推送功能，生成系统通知推送给用户
+		- robots.txt 给爬虫一个信息，是否给爬虫以及爬虫内容
+	- .gitignore  git的自动忽视那些文件
+	- package-lock.json 原生目录依赖哪些内容
+	- package.json 命令， start 开发，build 编译， test，eject 检查
+	- src 
+	  - index.js 入口文件 
+	```javascript
+	// 通过react-dom 渲染什么样的页面
+	import ReactDOM from 'react-dom'
+	// JSX 语法 不用引号
+	ReactDOM.render(
+	  <React.StrictMode>
+	    <App />
+	  </React.StrictMode>,
+	  document.getElementById('root')
+	);
+	// 缓存web信息, 非必须  
+	serviceWorker.unregister();
+	// 报告web重要信息，非必须  
+	reportWebVitals();
+	```
+	
+	  - App.css 全局css 在 App.js 中导入, 函数式组件 function App(){}
+	  - App.test.js 单元对于组件的测试（较少使用，测试方便下次高效使用）
+	  - setupTests.js 对于index的测试  
 ### React 元素渲染（JSX）
   #### JSX
   index.js 中 jsx 语法 
@@ -292,69 +388,3 @@ function run()
 
 setInterval(run, 1000)
 ```
-
-## 事件处理
-## 生命周期
-
-
-# 创建项目
- 1.	通过 script 引入使用，仅用于学习调试
-   
-   ```javascript
-   <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
-   <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-   ```
- 2.	通过 react 脚手架，创建项目进行开发，部署  
- 官方文档：[https://react.docschina.org/docs/create-a-new-react-app.html#create-react-app](https://react.docschina.org/docs/create-a-new-react-app.html#create-react-app)
-   
-	```javascrpt
-	1. 安装脚手架 create react app
-	
-	cnpm install -g create-react-app
-	如果能翻墙就用 npm
-	注：cnpm没有就先
-	npm install -g cnpm --registry=https://registry.npm.taobao.org
-	cnpm -v 检查
-	报错就将cnpm 放入 path 环境变量中
-	
-	2. 创建项目
-	
-	create-react-app 01reactapp(项目名称)
-	// 创建时间较长
-	
-	//运行
-	npm start
-	```
-
-	**目录结构**
-	- public  
-		- index.html id="root"  渲染在页面
-		- manifest.json pwa 渐进式框架，只有部分谷歌能实现这样的功能
-		  - pwa 渐进式web应用，可以生成桌面小图标，不需要打开浏览器
-		  - 通过网络缓存提升页面访问速度，达到渐进式的页面甚至离线访问，提升用户体验
-		  - 实现类似app的推送功能，生成系统通知推送给用户
-		- robots.txt 给爬虫一个信息，是否给爬虫以及爬虫内容
-	- .gitignore  git的自动忽视那些文件
-	- package-lock.json 原生目录依赖哪些内容
-	- package.json 命令， start 开发，build 编译， test，eject 检查
-	- src 
-	  - index.js 入口文件 
-	```javascript
-	// 通过react-dom 渲染什么样的页面
-	import ReactDOM from 'react-dom'
-	// JSX 语法 不用引号
-	ReactDOM.render(
-	  <React.StrictMode>
-	    <App />
-	  </React.StrictMode>,
-	  document.getElementById('root')
-	);
-	// 缓存web信息, 非必须  
-	serviceWorker.unregister();
-	// 报告web重要信息，非必须  
-	reportWebVitals();
-	```
-	
-	  - App.css 全局css 在 App.js 中导入, 函数式组件 function App(){}
-	  - App.test.js 单元对于组件的测试（较少使用，测试方便下次高效使用）
-	  - setupTests.js 对于index的测试  

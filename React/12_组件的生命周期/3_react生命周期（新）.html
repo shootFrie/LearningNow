@@ -16,6 +16,15 @@
   <!-- jsx转js -->
   <script src="../js/17.0.0/babel.min.js"></script>
   <script type="text/babel">
+    /*
+    * 新版本中有3个要加UNSAFE_前缀，未来可能删除
+    * componentWillMount 组件即将挂载
+    * componentWillRecevieProps 子组件接收父组件props
+    * componentWillUpdate 子组件更新
+    * 旧与新区别
+    * 新的即将废弃3个钩子，新增两个钩子 getDerivedStateFromProps 和 getSnapshotBeforeUpdate
+    * 
+    */
     // 组件Count
     class Count extends React.Component {
       constructor(props){
@@ -39,7 +48,7 @@
       }
 
       // 组件将要挂载钩子
-      componentWillMount(){
+      UNSAFE_componentWillMount(){
         console.log("Count---componentWillMount")
       }
 
@@ -51,7 +60,7 @@
       }
 
       // 组件将要更新的钩子
-      componentWillUpdate(){
+      UNSAFE_componentWillUpdate(){
         console.log("Count---componentWillUpdate");
       }
 
@@ -107,7 +116,7 @@
     // 组件B
     class B extends React.Component {
       // 组件接收新的props钩子
-      componentWillReceiveProps(){
+      UNSAFE_componentWillReceiveProps(){
         console.log("B组件---componentWillReciveProps");
       }
       // 组件更新“阀门”
@@ -117,7 +126,7 @@
       }
 
       // 组件将要更新钩子
-      componentWillUpdate(){
+      UNSAFE_componentWillUpdate(){
         console.log("B组件---componentWillUpdate")
       }
 
@@ -139,7 +148,7 @@
 
     ReactDOM.render(<A /> , document.getElementById("test"));
 
-    ReactDOM.render(<Count />, document.getElementById("test"))
+    // ReactDOM.render(<Count />, document.getElementById("test"))
   </script>
 </body>
 </html>
