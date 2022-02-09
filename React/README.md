@@ -7,6 +7,9 @@
 	- [组件](#组件)
 		- [组件的定义](#组件的定义)
 		- [组件三大核心属性](#组件三大核心属性)
+			- [state-组件内变量](#state-组件内变量)
+			- [props-父传子](#props-父传子)
+			- [refs与事件处理](#refs与事件处理)
 	- [事件处理](#事件处理)
 	- [生命周期](#生命周期)
 - [创建项目](#创建项目)
@@ -240,14 +243,185 @@ let element2 = (
 2 发现组件时使用函数定义的，随后new出来该类的实例，并通过实例调用到原型上的render方法
 3 将返回的虚拟DOM转为真实DOM,随后呈现在页面中
 ### 组件三大核心属性
-- state-组件内变量
+#### state-组件内变量
+- 基本使用
+```
+ <script type="text/babel">
+    // 1.创建组件
+    class Weather extends React.Component {
+      // 构造器调用几次？ -1次
+      constructor(props) {
+        super(props);
+        // 初始化状态
+        this.state = {isHot: true};
+        // this.changeWeather = this.changeWeather.bind(this);
+        // 解决this指向问题
+        this.demo = this.changeWeather.bind(this);
+      }
+      // render调用几次？ - 1+n次
+      render() {
+        // 读取状态
+        const {isHot} = this.state;
+        return (
+          // <h2 onclick="demo()">今天天气{isHot? "炎热": "凉爽"}</h2> 错误
+          // <h2 onclick={demo()}>今天天气{isHot? "炎热": "凉爽"}</h2> 这里一进去就执行
+          <h2 onclick={this.demo}>今天天气{isHot? "炎热": "凉爽"}</h2>
+        )
+      }
+      // 点击一次调用一次
+      changeWeather(){
+        // 这个方法是放在weather原型对象上 ，供实例使用
+        // 通过实例调用，this是实例; 如果单独放没有声明绑定实例this，这里this就是undefined
+        // 类中方法默认开启了局部严格模式，
+        console.log(this); //  undefined
+        // 状态不能随意更改，用内置api修改
+        // this.state.isHot = !this.state.isHot; 
+        // 用react的api修改； 更新是一种合并，不是替换
+        this.setState({isHot: !isHot})
+      }
+    }
+    ReactDOM.render(<Weather />, document.getElementById("container"));
+    function demo () {
+      console.log("被点击了");
+    }
+  </script>
+```
+简写：
+```
+<script type="text/babel">
+    class Weather extends React.Component{
+      state = {
+        isHot: true
+      }
+
+      // 箭头函数，this指向 = 上层this指向
+      change = () => {
+        this.setState({isHot : !isHot});
+      }
+
+      render(){
+        const {isHot} = this.state;
+        return <h2 onClick={this.change}>今天天气{isHot? "炎热": "凉爽"}</h2>
+      }
+    }
+
+    ReactDOM.render(<Weather />, document.getElementById("contain"));
+
+  </script>
+```
+#### props-父传子
 	- 基本使用
-- props-父传子
-	- 基本使用和传值限制
-- refs与事件处理
-	- 字符串形式（不被推荐但能用-效能不高）
-	- 回调函数形式 （内联函数更新时会调用两次，可忽略）
-	- createRef （最推荐）
+```
+class Person extends React.Component {
+	render(){
+		const {name,age,sex} = this.props
+		return (
+			<ul>
+				<li>姓名： {name}</li>
+				<li>年龄： {age + 1}</li>
+				<li>性别： {sex}</li>
+			</ul>
+		)
+	}
+}
+ReactDOM.render(<Person name="shaw" age="34" sex="female"/>, document.getElementById("contain"));
+```
+- 传值限制
+  	- 类名.propTypes ={} 对标签属性进行限制 
+  	- 类名.defaultProps ={} 对传入props值进行默认值显示
+```
+// 类组件
+class Person extends React.Component {
+	// 构造器
+	constructor(props){
+		// 不传入props，无法在构造器中访问this
+		// 这里props可以不拿,但是有些版本会变成undefined
+		super(props);
+		console.log("constructor",this.props); //{name:xx}
+	}
+	/* 简写模式
+		/**类相当于实例的原型, 所有在类中定义的方法, 都会被实例继承。
+		* 如果在一个方法前,加上Static关键字,
+		* 就表示该方法不会被继承,而是直接通过类来调用,这被称为 “静态方法”
+		* */
+		static propTypes = {
+			name: PropTypes.string.isRequired,
+			age: PropTypes.number,
+			sex: PropTypes.string
+		}
+
+		static defaultProps = {
+			sex: "男"
+		}
+
+	*/
+
+	render () {
+		const {name, age, sex} = this.props;
+		return (
+			<ul>
+				<li>name : {name} </li>
+				<li>age: {age + 1}</li>
+				<li>sex: {sex}</li>
+			</ul>
+		)
+	}
+
+}
+// 简写模式可以注释
+// 对标签属性进行类型、必要性限制
+Person.propTypes = {
+	name: PropTypes.string.isRequired, // 限制name必传，为string
+	age: PropTypes.number, // 限制age为数字
+	sex: PropTypes.string,
+	speak: PropTypes.func // 函数
+}
+// 指定默认标签属性值
+Person.defaultProps = {
+	sex: "男" // 默认值
+}
+// 简写模式可以注释end
+// 渲染组件到页面
+ReactDOM.render(<Person name="John" age={13} speak = {speak}/>, document.getElementById('contain'));
+
+function speak(){
+	console.log("say hi");
+}
+```
+函数式组件使用props
+```
+<script type="text/babel">
+	function Person(props){
+		const {name, age, sex} = props;
+		
+		return (
+			<ul>
+				<li>name: {name}</li>
+				<li>age: {age + 1}</li>
+				<li>sex: {sex}</li>
+			</ul>
+		)
+	}
+
+	// 函数式组件没有static可以放在函数内部
+	Person.propTypes = {
+		name: PropTypes.string.isRequired,
+		age: PropTypes.number,
+		sex: PropTypes.string
+	}
+
+	Person.defaultProps = {
+		sex: "女"
+	}
+
+	ReactDOM.render(<Person name="Shaw" age={45} />, document.getElementById("contain"));
+</script> 
+```
+
+#### refs与事件处理
+- 字符串形式（不被推荐但能用-效能不高）
+- 回调函数形式 （内联函数更新时会调用两次，可忽略）
+- createRef （最推荐）
 
 
 

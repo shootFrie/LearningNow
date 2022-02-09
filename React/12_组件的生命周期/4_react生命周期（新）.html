@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4_react生命周期（新）</title>
+</head>
+<body>
+  <!-- 容器 -->
+  <div id="test"></div>
+  <!-- 核心库 -->
+  <script src="../js/17.0.0/react.development.js"></script>
+  <!-- dom操作 -->
+  <script src="../js/17.0.0/react-dom.development.js"></script>
+  <!-- props -->
+  <script src="../js/17.0.0/prop-types.js"></script>
+  <!-- jsx转js -->
+  <script src="../js/17.0.0/babel.min.js"></script>
+
+  <script type="text/babel">
+    class Count extends React.Component {
+      state = {count:0}
+      constructor(props){
+        console.log("Count-constructor")
+        super(props);
+      }
+
+      // 挂载后钩子
+      componentDidMount() {
+        console.log("Count-componentDidMount")
+      }
+
+      // 控制组件更新的“阀门”
+      // 组件更新钩子setState()设置；返回true更新，false不更新
+      shouldComponentUpdate(){
+        console.log("Count---shouldComponentUpdate")
+        return true
+      }
+
+      
+
+      // 不加static 会报错
+      // static getDerivedStateFromProps () {
+        // console.log("Count-getDerivedStateFromProps")
+      // 若state取决于props，可以使用
+      static getDerivedStateFromProps (props, state) {
+        console.log("Count--getDerivedStateFromProps", props, state) // {count: 199} {count: 200} 
+        // 页面显示199不变了
+
+        // 不return 会报错； return null会警告应该返回state 对象
+        return null
+
+        /**
+        * getDerivedStateFromProps 会在调用 render 方法之前调用，
+        * 并且在初始挂载及后续更新时都会被调用。它应返回一个对象来更新 state，
+        * 如果返回 null 则不更新任何内容。
+        */
+        // return {count : 199}
+      }
+
+      // 组件更新前， shouldComponentUpdate后。
+      // 可以传入之前的state和props，获取之前的
+      getSnapshotBeforeUpdate(prevProps, prevState){
+        console.log("Count--getSnapshotBeforeUpdate", this.state, this.props)
+        // 这里要return 东西才会触发componentDidUpdate的第三个参数
+        return "dj"
+      }
+
+
+      // 组件更新后钩子
+      // 之前的state和props， snapshot 参数是当前的
+      componentDidUpdate(prevProps, prevState, snapshot){
+        console.log("Count---componentDidUpdate", prevProps, prevState, snapshot)
+      }
+
+      // 卸载前
+      componentWillUnmount(){
+        console.log("Count-componentWillUnmount")
+      }
+      // +1
+      add = () => {
+        const {count} = this.state
+        this.setState({count : count + 1})
+      }
+      
+      // 组件卸载
+      dead = () => {
+        ReactDOM.unmountComponentAtNode(document.getElementById("test"))
+      }
+
+      // 强制更新
+      force = () => {
+        this.forceUpdate()
+      }
+
+      render(){
+        const {count} = this.state
+        return (
+          <div>
+          <h3>总和为： {count}</h3>
+          <button onClick={this.add}>+1</button> 
+          <button onClick={this.dead}>卸载组件</button>
+          <button onClick={this.force}>不改变组件，更新一下</button>
+          </div>
+        )
+      }
+    }
+    ReactDOM.render(<Count count="199"/>, document.getElementById("test"))
+  </script>
+</body>
+</html>
