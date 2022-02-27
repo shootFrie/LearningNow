@@ -69,7 +69,7 @@
 
 
       // 组件更新后钩子
-      // 之前的state和props， snapshot 参数是当前的
+      // 之前的state和props， snapshot 参数是当前的getSnapshotBeforeUpdate返回值
       componentDidUpdate(prevProps, prevState, snapshot){
         console.log("Count---componentDidUpdate", prevProps, prevState, snapshot)
       }

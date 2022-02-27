@@ -62,7 +62,9 @@ class Emitter {
     let tasks = this.cache[name]
     if(tasks) {
       const index = tasks.findIndex(f => f === fn || f.callback === fn)
-      if (index >= 0) {}
+      if (index >= 0) {
+        tasks.splice(index, 1)
+      }
     }
   }
 
@@ -111,3 +113,25 @@ constructor 是每个实例对象都会拥有的一个属性，而且这个属�
 该方法主要应用于查找第一个符合条件的数组元素。它的参数是一个回调函数。在回调函数中可以写你要查找元素的条件，当条件成立为true时，返回该元素。如果没有符合条件的元素，返回值为undefined。
 - findIndex()
 findIndex()与find()的使用方法相同，只是当条件为true时findIndex()返回的是索引值，而find()返回的是元素。如果没有符合条件元素时findIndex()返回的是-1，而find()返回的是undefined。findIndex()当中的回调函数也是接收三个参数，与find()相同。
+```
+var arr = [1,2,3]
+arr.findIndex(function (item) {
+  return item > 1
+})
+// 1
+```
+- slice
+  slice 不会修改原数组，只会返回一个浅复制了原数组中的元素的一个新数组。原数组的元素会按照下述规则拷贝
+  - 如果该元素是个对象引用 （不是实际的对象），slice 会拷贝这个对象引用到新的数组里。两个对象引用都引用了同一个对象。如果被引用的对象发生改变，则新的和原来的数组中的这个元素也会发生改变。
+  - 对于字符串、数字及布尔值来说（不是 String、Number 或者 Boolean 对象），slice 会拷贝这些值到新的数组里。在别的数组里修改这些字符串或数字或是布尔值，将不会影响另一个数组。
+如果向两个数组任一中添加了新元素，则另一个不会受到影响。
+- splice()
+splice() 方法向/从数组添加/删除项目，并返回删除的项目。
+注：splice() 方法会改变原始数组。
+1. 创建一个 EventEmitter 类
+2. 在该类上创建一个事件中心（Map）
+3. on 方法用来把函数 fn 都加到事件中心中（订阅者注册事件到调度中心）
+4. emit 方法取到 arguments 里第一个当做 event，根据 event 值去执行对应事件中心中的函数（发布者发布事件到调度中心，调度中心处理代码）
+5. off 方法可以根据 event 值取消订阅（取消订阅）
+6. once 方法只监听一次，调用完毕后删除缓存函数（订阅一次）
+7. 注册一个 newListener 用于监听新的事件订阅

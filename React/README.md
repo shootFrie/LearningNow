@@ -11,6 +11,7 @@
 			- [props-父传子](#props-父传子)
 			- [refs与事件处理](#refs与事件处理)
 	- [事件处理](#事件处理)
+	- [收集表单数据](#收集表单数据)
 	- [生命周期](#生命周期)
 - [创建项目](#创建项目)
 		- [React 元素渲染（JSX）](#react-元素渲染jsx)
@@ -422,10 +423,125 @@ function speak(){
 - 字符串形式（不被推荐但能用-效能不高）
 - 回调函数形式 （内联函数更新时会调用两次，可忽略）
 - createRef （最推荐）
+```
+class Demo extends React.Component {
+      inpClick = () => {
+        console.log("第一个输入框的值：",this.refs.input1.value);
+      }
+			/**
+     * 回调函数的条件：别人调用的函数
+     * 1.你定义的函数
+     * 2.你没调用
+     * 3.函数最终执行了
+    */
+      inpBlur = () => {
+	// 回调函数形式
+        const {input2} = this
+        console.log("失焦后值：", this.input2.value)
+      }
 
+			 
+     state = { isHot : true, isShow: false} 
+
+     showInfo = () => {
+        const { inp1 } = this
+        console.log(inp1);
+     }
+     changeWeather = () => {
+      this.setState({isHot : !isHot})
+     }
+     saveInput = (c) => {
+       this.inp1 = c
+     }
+		/**
+       * React.createRef 调用后可以返回一个容器，该容器可以存储被ref所标识的节点
+       * 容器“专人专用”，一个容器只能存一个
+      */
+     myRef = React.createRef()
+     myRef2 = React.createRef()
+     // state = {isShow: false}
+     showData = () => {
+       const {isShow} = this.state
+       console.log("createRef拿到的 {current}", this.myRef.current);
+       this.setState({isShow : !isShow})
+     }
+
+     BlurShow = () => {
+       alert(this.myRef2.current.value);
+     }
+
+      render(){
+				const {isHot} = this.state
+        return (
+          <div>
+            <input ref="input1" type="text"  placeholder="点击后执行"/>
+            <button onClick={this.inpClick}>点击</button>
+            <input ref={c => this.input2 = c} onBlur={this.inpBlur} type="text" placeholder="失焦后执行" />
+						<!--ref 回调的另一种-->
+						<h4>今天天气{isHot? "凉爽" : "炎热"}</h4>
+            {/* ref内联函数更新时会获取到两次，第一次获取到null
+            <input ref={c => {this.inp1 = c; console.log(`@`, c);} } type="text" /> 
+              写成class的绑定函数;这两个可忽略
+          */}
+            <input type="text" ref={this.saveInput} />
+            <button onClick={this.showInfo}>点我提示输入的数据</button>
+            <button onClick={this.changeWeather}>点我改变天气</button>
+
+						 <div>
+							<input type="text" ref={this.myRef} placeholder="点右边按钮显示"/> 
+							<button onClick={this.showData}>点我显示左侧的数据</button>
+							<span>{this.state.isShow ? this.myRef.current.value : ""}</span>
+							<input placeholder="失焦显示" type="text" ref={this.myRef2} onBlur={this.BlurShow}/>
+						</div>
+          </div>
+         
+        )
+      }
+    }
+
+    ReactDOM.render(<Demo />, document.getElementById("contain"))
+```
 
 
 ## 事件处理
+- onClick ; onXxxx
+```
+<script type="text/babel">
+    /**
+     * (1).通过onXxxx属性指定事件处理函数（注意大小写）
+     *   a. React 使用自定义事件，而不是原生DOM事件 --- 兼容性
+     *   b. React中的事件是通过事件委托方式处理的（委托给最外层的元素）事件冒泡
+     * (2).通过event.target得到发生事件的DOM元素对象
+     * */ 
+    // 类组件
+    class Demo extends React.Component {
+      // ref容器创建
+      myRef = React.createRef
+      showDate = () => {
+        alert(this.myRef.current.value)
+      }
+      BlurShow = (event) => {
+        // 不要过度使用ref
+        alert(event.target.value)
+      }
+      render () {
+        return (
+          <div>
+            <input ref={myRef} type="text" placeholder="点击右边按钮获取值"/>
+            <button onClick={this.showDate}>点击左侧值显示</button>
+            <input type="text" onBlur={this.BlurShow} />
+          </div>
+        )
+      }
+    }
+
+    ReactDOM.render(<Demo />, document.getElementById("contain"));
+  </script>
+```
+
+## 收集表单数据
+- 受控组件
+- 非受控组件
 ## 生命周期
 
 

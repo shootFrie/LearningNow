@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2_key的作用</title>
+</head>
+<body>
+  <!-- 准备容器 -->
+  <div id="test"></div>
+  <!-- 核心库 -->
+  <script src="../js/17.0.0/react.development.js"></script>
+  <!-- 支持react操作dom -->
+  <script src="../js/17.0.0/react-dom.development.js"></script>
+  <!-- jsx转js -->
+  <script src="../js/17.0.0/babel.min.js"></script>
+
+  <script type="text/babel">
+    /**
+      经典面试题: 
+      1. react/vue中的key有什么作用?(key的内部原理是什么?)
+      2. 为什么遍历列表时最好不要用index作为key
+
+      1). 虚拟DOM中key的作用:
+        - 简单说: 是标识; key是虚拟DOM对象的标识,在更新显示时key起着极其重要的作用
+
+        - 详细说: 当状态数据发生变化时,react会根据 [新数据] 生成 [新的虚拟DOM]
+          随后 react 会进行 [新的虚拟DOM] 和 [旧的虚拟DOM] 的 diff 比较,比较规则如下:
+
+            a. 旧虚拟DOM中找到了与新虚拟DOM相同key:
+              1. 若虚拟DOM中内容没变,直接使用之前的
+              2. 若虚拟DOM中内容改变,则生成新的真实DOM,替换掉页面之中的真实DOM
+
+            b. 旧虚拟DOM没有找到与新虚拟DOM相同的key
+              根据数据创建新的真实DOM,随后渲染到页面
+
+      2). 用index作为key可能会引发的问题:
+        - 若对数据进行逆序删除,逆序添加等破坏顺序操作
+              --- 会产生没有必要的真实DOM更新 ===> 界面没问题,效率低
+
+        - 如果结构中包含输入类的DOM
+            - 会产生错误DOM更新, ===> 页面有问题
+
+        - 注意!如果不存在对数据进行逆序删除,逆序添加等破坏顺序操作
+        仅用于渲染列表展示数据,用index作为key时没问题的
+
+      3). 开发中如何选择key?
+        - 最好使用每条数据的唯一标识作为key,比如id, 手机号,身份证,学号等唯一值
+        - 如果确定只是简单的展示数据,用index也是可以的.
+
+
+    */
+    /**
+     慢动作回放 --- index索引值作为key
+
+     初始数据:
+        {id: 1, name: 'shaw', age: 34},
+        {id: 2, name: 'root', age: 38}
+      根据数据生成初始虚拟DOM:
+        <li key=0>shaw --- 34  <input type="text" /></li>
+        <li key=1>root --- 38  <input type="text" /></li>
+      更新后的数据:
+        {id: 3, name: 'resses', age: 45},
+        {id: 1, name: 'shaw', age: 34},
+        {id: 2, name: 'root', age: 38}
+
+      更新后的初始虚拟DOM:
+        <li key=0>resses --- 45  <input type="text" /></li>
+        <li key=1>shaw --- 34  <input type="text" /></li>
+        <li key=2>root --- 38  <input type="text" /></li>
+      用index作为key会导致这里全部更新,而使用id作为key只有原先没有的key更新,或原有key数据更新的真实dom更新
+      加了input, index的key数据会残留,新加的input会有残留数据
+    */
+    class Person extends React.Component{
+        state = {
+          persons : [
+            {id: 1, name: 'shaw', age: 34},
+            {id: 2, name: 'root', age: 38}
+          ]
+        }
+
+        add = () => {
+          const {persons} = this.state
+          const p = {id:persons.length + 1, name: 'resses', age: 45}
+          this.setState({persons: [p, ...persons]})
+        }
+
+        render(){
+          return (
+            <div>
+              <h2>展示人员信息</h2>
+              <button onClick={this.add}>添加一个resses</button>
+              <h3>使用index(索引值)作为key</h3>
+              <ul>
+                {
+                  this.state.persons.map((person, index) => {
+                    return <li key={index}>{person.name} --- {person.age} <input type="text" /></li>
+                  })
+                }
+              </ul>
+              <hr />
+              <h3>使用id(索引值)作为key</h3>
+              <ul>
+                {
+                  this.state.persons.map((person, index) => {
+                    return <li key={person.id}>{person.name} --- {person.age}  <input type="text" /></li>
+                  })
+                }
+              </ul>
+            </div>
+          )
+        }
+    }
+    ReactDOM.render(<Person />,document.getElementById("test"));
+  </script>
+</body>
+</html>

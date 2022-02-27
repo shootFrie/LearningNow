@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>5_getSnapshotBeforeUpdate使用场景</title>
+  <style>
+    .list{
+      width: 300px;
+      height: 150px;
+      overflow: auto;
+      background-color: aqua;
+    }
+    .news{
+      width: 300px;
+      height: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div id="test"></div>
+  <!-- 核心库 -->
+  <script src="../js/17.0.0/react.development.js"></script>
+  <!-- dom操作 -->
+  <script src="../js/17.0.0/react-dom.development.js"></script>
+  <!-- props -->
+  <script src="../js/17.0.0/prop-types.js"></script>
+  <!-- jsx转js -->
+  <script src="../js/17.0.0/babel.min.js"></script>
+  <script type="text/babel">
+    /**
+    * 实现新闻一直在增加，但是滚动条停在阅读位置；这里设置10条以防万一
+    * 细节错误： 循环用map； key是必须的，string + 数字会变成string，01
+    * 获取原状态要放循环里面
+    **/
+    class NewList  extends React.Component {
+      state = {list:[], timer:null}
+
+      componentDidMount () {
+        let timer = setInterval(() => {
+          // 获取原状态
+          const {list} = this.state
+          const news= "新闻 "+ (list.length + 1)
+          // 更新状态
+          this.setState({list : [news, ...list]})
+        }, 1000)
+        this.setState({timer: timer})
+      }
+
+      getSnapshotBeforeUpdate() {
+        return this.refs.list.scrollHeight // 内容区高度
+      }
+      
+      componentDidUpdate(preProps, preState, height) {
+        this.refs.list.scrollTop += this.refs.list.scrollHeight - height
+        // 原先高度 += (新增后的高度-内容区高度 = [新增差值])
+      }
+
+      render(){
+        const {list} = this.state
+        return (
+          <div className="list" ref="list">
+            {
+              list.map((item, index) => {
+                return <div key={index} className="news">{item}</div>
+              })
+            }
+          </div>
+        )
+      }
+    }
+    ReactDOM.render(<NewList />, document.getElementById("test"))
+  </script>
+</body>
+</html>

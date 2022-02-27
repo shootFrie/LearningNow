@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1_验证Diffing算法</title>
+</head>
+<body>
+  <!-- 准备容器 -->
+  <div id="test"></div>
+   <!-- 核心库 -->
+   <script src="../js/17.0.0/react.development.js"></script>
+   <!-- 支持react操作dom -->
+   <script src="../js/17.0.0/react-dom.development.js"></script>
+   <!-- jsx转js -->
+   <script src="../js/17.0.0/babel.min.js"></script>
+
+   <script type="text/babel">
+     class Time extends React.Component {
+       state = {date: new Date()}
+
+       componentDidMount(){
+         setInterval(() => {
+           this.setState({
+             date: new Date()
+           })
+           /**
+           * 每次改变都会和之前的做比较,没有改变的数据标签不变;
+           * 改变数据的最小粒度是标签(节点)
+           */
+         }, 1000)
+       }
+
+       render(){
+         return (
+           <div>
+            <h1>hello</h1>
+            <input type="text" />
+            <span>
+              现在是: {this.state.date.toTimeString()}
+              <input type="text" />  
+            </span>
+            {/* 每次setState刷新, diffing算法进行匹配,改变的是span标签, 但span标签内的其它标签没有改变
+              就不会被刷新.
+              */} 
+           </div>
+         )
+       }
+     }
+
+     ReactDOM.render(<Time />, document.getElementById("test"))
+   </script>
+
+</body>
+</html>
