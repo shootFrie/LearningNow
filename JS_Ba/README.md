@@ -1,5 +1,9 @@
 
-
+- [笔记](#笔记)
+  - [数据类型判断](#数据类型判断)
+  - [事件总线（发布订阅模式）](#事件总线发布订阅模式)
+  - [字符串模板](#字符串模板)
+    - [部分知识点](#部分知识点)
 # 笔记
 ## 数据类型判断
 ```
@@ -135,3 +139,30 @@ splice() 方法向/从数组添加/删除项目，并返回删除的项目。
 5. off 方法可以根据 event 值取消订阅（取消订阅）
 6. once 方法只监听一次，调用完毕后删除缓存函数（订阅一次）
 7. 注册一个 newListener 用于监听新的事件订阅
+
+
+## 字符串模板
+```
+function render (template, data) {
+  const reg = /\{\{(\w+)\}\}/; // 模板字符串正则
+  if (reg.test(template)) { // 判断字符串里面是否有模板字符串
+    const name = reg.exec(template)[1]; // 查找第一个
+    template = template.replace(reg, data[name]); // 替换
+    return render(template, data); // 递归的渲染并返回
+  }
+  return template; 
+}
+render('你好，{{a}}, {{b}}', {a: 12, b: "笑死"})
+```
+
+### 部分知识点
+- reg.exec(str) 返回数组
+  - ['匹配字符串', index: 第一次出现下标, input: '输入的str', group: ]
+- reg.test(str) 方法执行一个检索，用来查看正则表达式与指定的字符串是否匹配。返回 true 或 false。
+- str.replace(regexp|substr, newSubStr | function) 方法返回一个由替换值（replacement）替换部分或所有的模式（pattern）匹配项后的新字符串。
+  - [replace()](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
+
+- \w ,匹配一个单字字符（字母、数字或者下划线）。等价于 [A-Za-z0-9_]。
+- 匹配前面一个表达式 1 次或者多次。等价于 {1,}。
+- \w+ 匹配多个
+- 注: (\w+) 要单独打括号否则 只会匹配出一个 '{{a}}'

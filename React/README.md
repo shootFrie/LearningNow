@@ -1,21 +1,21 @@
 <!-- toc -->
 - [React笔记](#react笔记)
-	- [简介及入门](#简介及入门)
-		- [入门基础](#入门基础)
-		- [jsx](#jsx)
-		- [JSX_style 样式](#jsx_style-样式)
-	- [组件](#组件)
-		- [组件的定义](#组件的定义)
-		- [组件三大核心属性](#组件三大核心属性)
-			- [state-组件内变量](#state-组件内变量)
-			- [props-父传子](#props-父传子)
-			- [refs与事件处理](#refs与事件处理)
-	- [事件处理](#事件处理)
-	- [收集表单数据](#收集表单数据)
-	- [生命周期](#生命周期)
+  - [简介及入门](#简介及入门)
+    - [入门基础](#入门基础)
+    - [jsx](#jsx)
+    - [JSX_style 样式](#jsx_style-样式)
+  - [组件](#组件)
+    - [组件的定义](#组件的定义)
+    - [组件三大核心属性](#组件三大核心属性)
+      - [state-组件内变量](#state-组件内变量)
+      - [props-父传子](#props-父传子)
+      - [refs与事件处理](#refs与事件处理)
+  - [事件处理](#事件处理)
+  - [收集表单数据](#收集表单数据)
+  - [生命周期](#生命周期)
 - [创建项目](#创建项目)
-		- [React 元素渲染（JSX）](#react-元素渲染jsx)
-			- [JSX](#jsx-1)
+    - [React 元素渲染（JSX）](#react-元素渲染jsx)
+      - [JSX](#jsx-1)
 # React笔记
 ## 简介及入门
   React 是构建用户界面的 Javascript 库，小巧而复杂，主要用于构建 UI 界面。Facebook研发的，后来用于Instagram，2013年开源。  
@@ -543,7 +543,23 @@ class Demo extends React.Component {
 - 受控组件
 - 非受控组件
 ## 生命周期
-
+- 旧 
+  - 挂载时componentWillMount
+  - 挂载时render
+  - 挂载时componentDidMount
+  - 父组件更新子组件 componentWillRecevieProp
+  - shouldComponentUpdate [setState]
+  - componentWillUpdate [foreceUpdate()]
+  - 父组件更新子组件 render
+  - componentDidUpdate
+  - ReactDOM.unmountComponentAtNode(document.getElementById()) 卸载
+  - componentWillUnmout
+- 新
+  - 不建议用的钩子,前面加UNSAFE_
+    - UNSAFE_componentWillUpdate
+    - UNSAFE_componentWillReceiveProps
+    - UNSAFE_componentWillUpdate
+  - getSnapshotBeforeUpdate
 
 # 创建项目
  1.	通过 script 引入使用，仅用于学习调试
@@ -555,53 +571,80 @@ class Demo extends React.Component {
  2.	通过 react 脚手架，创建项目进行开发，部署  
  官方文档：[https://react.docschina.org/docs/create-a-new-react-app.html#create-react-app](https://react.docschina.org/docs/create-a-new-react-app.html#create-react-app)
    
-	```javascrpt
-	1. 安装脚手架 create react app
-	
-	cnpm install -g create-react-app
-	如果能翻墙就用 npm
-	注：cnpm没有就先
-	npm install -g cnpm --registry=https://registry.npm.taobao.org
-	cnpm -v 检查
-	报错就将cnpm 放入 path 环境变量中
-	
-	2. 创建项目
-	
-	create-react-app 01reactapp(项目名称)
-	// 创建时间较长
-	
-	//运行
-	npm start
-	```
+```javascrpt
+1. 安装脚手架 create react app
 
-	**目录结构**
-	- public  
-		- index.html id="root"  渲染在页面
-		- manifest.json pwa 渐进式框架，只有部分谷歌能实现这样的功能
-		  - pwa 渐进式web应用，可以生成桌面小图标，不需要打开浏览器
-		  - 通过网络缓存提升页面访问速度，达到渐进式的页面甚至离线访问，提升用户体验
-		  - 实现类似app的推送功能，生成系统通知推送给用户
-		- robots.txt 给爬虫一个信息，是否给爬虫以及爬虫内容
-	- .gitignore  git的自动忽视那些文件
-	- package-lock.json 原生目录依赖哪些内容
-	- package.json 命令， start 开发，build 编译， test，eject 检查
-	- src 
-	  - index.js 入口文件 
-	```javascript
-	// 通过react-dom 渲染什么样的页面
-	import ReactDOM from 'react-dom'
-	// JSX 语法 不用引号
-	ReactDOM.render(
-	  <React.StrictMode>
-	    <App />
-	  </React.StrictMode>,
-	  document.getElementById('root')
-	);
-	// 缓存web信息, 非必须  
-	serviceWorker.unregister();
-	// 报告web重要信息，非必须  
-	reportWebVitals();
-	```
+cnpm install -g create-react-app
+如果能翻墙就用 npm
+注：cnpm没有就先
+npm install -g cnpm --registry=https://registry.npm.taobao.org
+cnpm -v 检查
+报错就将cnpm 放入 path 环境变量中
+
+2. 创建项目
+
+create-react-app 01reactapp(项目名称)
+// 创建时间较长
+
+//运行
+npm start
+```
+**遇到坑**  
+```
+1.npm 报错 
+Error: GET https://r.npm.taobao.org/create-reate-app response 404 status
+输入
+> npm config set registry https://registry.npmjs.org/
+
+2. node 版本不高报错
+Create React App requires Node 14 or higher.
+在官网下最新版覆盖，不知道为什么无法下载window版本
+
+查了下 node node有一个模块叫n，是专门用来管理node.js的版本的。
+> npm install -g n
+
+报错
+Unsupported platform for n@8.0.2: wanted {"os":"!win32","arch":"any"} (current: {"os":"win32","arch":"x64"})
+加个 --force
+> npm install -g n 
+
+```
+感觉我node版本更低了，原先14，现在12  
+查了下 windows不支持 n； 还是要去官网找最新版  
+用迅雷下载成功了。浏览器下载问题，手机可以顺利下载；  
+查了下有个回帖说原来是迅雷干的，难怪它可以下载。  
+迅雷没有通过正常途径卸载，造成迅雷卸载不干净，把迅雷XLServicePlatform服务留下了，直接把下载的http请求截获了，但是迅雷已经没了，所以迅雷没办法下，但浏览器又拿不到请求，就造成在浏览器中点击下载链接没反应的情况。  
+[如何解决谷歌浏览器在下载文件时，点击了下载链接却没反应的问题](https://www.jianshu.com/p/2939dca220a4)
+因为对部分资源有拦截所以没发现，我禁用掉node的迅雷插件后也能成功下载
+
+**目录结构**
+- public  
+	- index.html id="root"  渲染在页面
+	- manifest.json pwa 渐进式框架，只有部分谷歌能实现这样的功能
+		- pwa 渐进式web应用，可以生成桌面小图标，不需要打开浏览器
+		- 通过网络缓存提升页面访问速度，达到渐进式的页面甚至离线访问，提升用户体验
+		- 实现类似app的推送功能，生成系统通知推送给用户
+	- robots.txt 给爬虫一个信息，是否给爬虫以及爬虫内容
+- .gitignore  git的自动忽视那些文件
+- package-lock.json 原生目录依赖哪些内容
+- package.json 命令， start 开发，build 编译， test，eject 检查
+- src 
+	- index.js 入口文件 
+```javascript
+// 通过react-dom 渲染什么样的页面
+import ReactDOM from 'react-dom'
+// JSX 语法 不用引号
+ReactDOM.render(
+	<React.StrictMode>
+		<App />
+	</React.StrictMode>,
+	document.getElementById('root')
+);
+// 缓存web信息, 非必须  
+serviceWorker.unregister();
+// 报告web重要信息，非必须  
+reportWebVitals();
+```
 	
 	  - App.css 全局css 在 App.js 中导入, 函数式组件 function App(){}
 	  - App.test.js 单元对于组件的测试（较少使用，测试方便下次高效使用）
