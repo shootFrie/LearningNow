@@ -14,8 +14,13 @@
   - [收集表单数据](#收集表单数据)
   - [生命周期](#生命周期)
 - [创建项目](#创建项目)
+  - [安装脚手架](#安装脚手架)
+    - [目录结构](#目录结构)
     - [React 元素渲染（JSX）](#react-元素渲染jsx)
       - [JSX](#jsx-1)
+    - [样式模块化](#样式模块化)
+  - [暴露属性和解构赋值](#暴露属性和解构赋值)
+  - [代码片段生成组件](#代码片段生成组件)
 # React笔记
 ## 简介及入门
   React 是构建用户界面的 Javascript 库，小巧而复杂，主要用于构建 UI 界面。Facebook研发的，后来用于Instagram，2013年开源。  
@@ -570,7 +575,7 @@ class Demo extends React.Component {
    ```
  2.	通过 react 脚手架，创建项目进行开发，部署  
  官方文档：[https://react.docschina.org/docs/create-a-new-react-app.html#create-react-app](https://react.docschina.org/docs/create-a-new-react-app.html#create-react-app)
-   
+## 安装脚手架   
 ```javascrpt
 1. 安装脚手架 create react app
 
@@ -615,9 +620,36 @@ Unsupported platform for n@8.0.2: wanted {"os":"!win32","arch":"any"} (current: 
 查了下有个回帖说原来是迅雷干的，难怪它可以下载。  
 迅雷没有通过正常途径卸载，造成迅雷卸载不干净，把迅雷XLServicePlatform服务留下了，直接把下载的http请求截获了，但是迅雷已经没了，所以迅雷没办法下，但浏览器又拿不到请求，就造成在浏览器中点击下载链接没反应的情况。  
 [如何解决谷歌浏览器在下载文件时，点击了下载链接却没反应的问题](https://www.jianshu.com/p/2939dca220a4)
-因为对部分资源有拦截所以没发现，我禁用掉node的迅雷插件后也能成功下载
+因为对部分资源有拦截所以没发现，我禁用掉node的迅雷插件后也能成功下载 
+安装好后eslint又报错：
+```
+'plugins' doesn't add plugins to configuration to load. Please use the 'overrideConfig.plugins' option instead.
+```
+查完发现是vs code 的问题，打开设置
+添加
+```
+"eslint.options": {
+    "overrideConfig": {
+      "env": {
+        "browser": true,
+        "es6": true
+      },
+      "parserOptions": {
+        "ecmaVersion": 2019,
+        "sourceType": "module",
+        "ecmaFeatures": {
+          "jsx": true
+        }
+      },
+      "rules": {
+        "no-debugger": "off"
+      }
+    }
+  },
+```
+成功不报错。
 
-**目录结构**
+### 目录结构
 - public  
 	- index.html id="root"  渲染在页面
 	- manifest.json pwa 渐进式框架，只有部分谷歌能实现这样的功能
@@ -629,7 +661,11 @@ Unsupported platform for n@8.0.2: wanted {"os":"!win32","arch":"any"} (current: 
 - package-lock.json 原生目录依赖哪些内容
 - package.json 命令， start 开发，build 编译， test，eject 检查
 - src 
+	- App.js 组件文件
+	- App.test.js 测试文件
 	- index.js 入口文件 
+- manifest.json 应用加壳的配置文件
+- robots.txt 爬虫文件，爬虫规矩，什么能爬什么不能
 ```javascript
 // 通过react-dom 渲染什么样的页面
 import ReactDOM from 'react-dom'
@@ -720,4 +756,67 @@ function run()
 }
 
 setInterval(run, 1000)
+```
+
+### 样式模块化
+为了防止模块中样式命名重复，后引用的组件样式覆盖之前组件样式，可以在css里面进行嵌套
+```
+index.css 组件独特 className下写
+.index {
+  .title {
+
+  }
+}
+```
+css文件中命名加入module,比如index.module.css, 引入
+```
+import hello from './index.module.css'
+
+<h1 className={hello.title}> </h1>
+```
+## 暴露属性和解构赋值
+在App.js 引入中
+```
+import React, {Component} from 'react'
+```
+这里的React, {Component} 能同时引入是因为在暴露文件中用分别暴露的形式暴露了Component
+```
+export class Component = {}
+React.Component = Component
+export default React
+```
+如果暴露文件是这样
+```
+class Component = {}
+React.Component = Component
+export default React
+```
+那Component只能用React获取
+```
+import React from "react"
+const {Component} = React
+```
+## 代码片段生成组件
+vs code 安装react插件
+vs code 输入 rcc ，按tab键生成类式组件
+```
+import React, { Component } from 'react'
+
+export default class App extends Component {
+  render() {
+    return (
+      <div>App</div>
+    )
+  }
+}
+```
+vs code 输入 rfc ，按tab键生成函数式组件
+```
+import React from 'react'
+
+export default function App() {
+  return (
+    <div>App</div>
+  )
+}
 ```
