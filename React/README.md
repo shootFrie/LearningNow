@@ -21,6 +21,9 @@
     - [样式模块化](#样式模块化)
   - [暴露属性和解构赋值](#暴露属性和解构赋值)
   - [代码片段生成组件](#代码片段生成组件)
+  - [Todo list](#todo-list)
+    - [props 传值限制](#props-传值限制)
+    - [底部全选](#底部全选)
 # React笔记
 ## 简介及入门
   React 是构建用户界面的 Javascript 库，小巧而复杂，主要用于构建 UI 界面。Facebook研发的，后来用于Instagram，2013年开源。  
@@ -768,7 +771,7 @@ index.css 组件独特 className下写
   }
 }
 ```
-css文件中命名加入module,比如index.module.css, 引入
+css文件中命名加入module,比如index.module.css, 引入； 用得没上面多
 ```
 import hello from './index.module.css'
 
@@ -820,3 +823,28 @@ export default function App() {
   )
 }
 ```
+
+## Todo list
+属性用{...todo} 把对象里面属性都传过去
+```
+ {
+    todos.map((todo, index) => {
+      return <Item  key={todo.id} {...todo}/>
+    })
+  }
+```
+onKeyUp 键盘抬起事件
+```
+npm i nanoid 生成uuid
+```
+子传父： 父组件回调函数传给子组件，子组件调用
+
+### props 传值限制
+1. 引入 propTypes 在 prop-types
+```
+npm i prop-types
+```
+2. static PropTypes = {}
+
+### 底部全选
+1. 使用checked； defaultChecked只能初始赋值一次；Footer动态变化的checked事件传值event.target.checked给App.js

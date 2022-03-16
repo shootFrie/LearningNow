@@ -1,0 +1,42 @@
+#root{
+  display: flex;
+  justify-content: center;
+}
+.Todos_box{
+  width: 450px;
+  border: 1px solid #b8b6a7;
+  padding: 10px;
+}
+.Todo_header_input{
+  border: 1px solid #b8b6a7;
+  border-radius: 5px;
+  width: 445px;
+  height: 28px;
+}
+.todo_list {
+  margin: 20px auto;
+}
+.todo_item{
+  border: 1px solid #b8b6a7;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+button {
+  background-color: #fd5d78;
+  color: #fff;
+  border: none;
+  border-radius: 2px;
+  width: 80px;
+  height: 28px;
+}
+.todo_foot{
+  display: flex;
+  justify-content: space-between;
+}
+.todo_foot_btn {
+  width: 130px;
+}
+label{
+  height:30px;
+}
