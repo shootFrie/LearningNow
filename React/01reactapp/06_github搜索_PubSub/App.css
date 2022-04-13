@@ -1,0 +1,44 @@
+*{
+  padding: 0;
+  margin: 0;
+}
+.container {
+  width: 970px;
+  margin: 0 auto;
+}
+.container  .search {
+  width: 100%;
+  background-color: #ddd;
+  padding: 100px 20px 0 20px;
+  height: 150px;
+}
+input{
+  width: 200px;
+  height:20px;
+  padding:0 5px;
+  border-radius: 2px;
+}
+button {
+  margin-left: 5px;
+  height:23px;
+  width: 120px;
+}
+
+
+.card {
+  float: left;
+  width: 33.333%;
+  padding: .75rem;
+  margin-bottom: 2rem;
+  border: 1px solid #efefef;
+  text-align: center;
+}
+a{
+  text-decoration: none;
+}
+
+img{
+  vertical-align: middle;
+}
+
+

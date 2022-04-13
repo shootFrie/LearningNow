@@ -24,6 +24,8 @@
   - [Todo list](#todo-list)
     - [props 传值限制](#props-传值限制)
     - [底部全选](#底部全选)
+  - [react 内的ajax](#react-内的ajax)
+  - [github搜索案例](#github搜索案例)
 # React笔记
 ## 简介及入门
   React 是构建用户界面的 Javascript 库，小巧而复杂，主要用于构建 UI 界面。Facebook研发的，后来用于Instagram，2013年开源。  
@@ -848,3 +850,86 @@ npm i prop-types
 
 ### 底部全选
 1. 使用checked； defaultChecked只能初始赋值一次；Footer动态变化的checked事件传值event.target.checked给App.js
+
+
+## react 内的ajax
+1. 用集成或自己封装
+集成 /安装axios
+```
+npm i axios
+或
+yarn add axios
+```
+练习axios使用  
+
+配置代理 - 【跨域，客户端发出的数据，服务器接收后，返回的数据被客户端ajax引擎拒绝接收，代理就是一个中间间，开一个微小的服务器，代理和客户端同源，没有ajax引擎不会拦截服务器的数据】  
+客户端 localhost:3000  
+服务端 localhost:5000
+```
+在package.json配置全局代理
+发起3000的请求，都转到5000
+"proxy": "http://localhost:5000"
+
+axios
+axios.get('http://localhost:3000/students').then(
+     response => {console.log("成功了", response.data);},
+     error => {console.log("失败了", error);}
+   )
+```
+3000代理会把没有的找5000要  
+假设有多个服务器，一个全局代理就无法满足条件,可以建立一个setupProxy.js;  
+setupProxy.js 文件会被加到webpack配置里面，所以里面是node语法，CJS[CommonJS]
+```
+setupProxy.js
+// 内置模块; react内已有
+const proxy = require('http-proxy-middleware')
+// 暴露个对象
+module.exports = function(app) {
+  app.use(
+    // 前缀请求， 转发的对象
+    proxy('/api1', {
+      target: 'http://localhost:5000',
+      changeOrigin: true,
+      pathRewrite: {'^/api1': ''} //替换掉写了的
+    }),
+    proxy('/api2', {
+      target: 'http://localhost:5001',
+      changeOrigin: true,
+      pathRewrite: {"^/api2": ""}
+    })
+  )
+}
+
+```
+运行显示无法访问；上面是低版本配置，更换配置
+```
+
+
+App.js
+
+getStudentData = () => {
+   axios.get('/api1/students').then(
+     response => {console.log("成功了", response.data);},
+     error => {console.log("失败了", error);}
+   )
+  }
+  getCartData = () => {
+    axios.get('/api2/cars').then(
+      response => {console.log("成功了", response.data);},
+      error => {console.log("失败了", error);}
+    )
+  }
+```
+
+## github搜索案例
+a 的href 需要有ref="noreferrer" 
+
+1. 静态页面编写
+2. search模块编写axios获取值，设置代理。http://localhost:5000 作为中间服务器，对没有频繁请求导致没有请求的数据返回默认数据
+3. 创建一个改变状态的函数放父组件，子组件用函数修改状态
+
+**兄弟组件互通信息 -- 订阅-发布机制**
+1.工具PubSubJS
+```
+yarn add pubsub-js
+```
