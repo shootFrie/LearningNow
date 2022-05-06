@@ -10,8 +10,8 @@ export default class List extends Component {
   }
   componentDidMount() { 
     // 订阅信息
-    PubSub.subscribe("upData", (_, stateObj) => {
-      this.token = console.log("List收到消息", stateObj)
+    this.token = PubSub.subscribe("upData", (_, stateObj) => {
+      console.log("List收到消息", stateObj)
       this.setState(stateObj)
     });
   }

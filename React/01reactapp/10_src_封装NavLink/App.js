@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { Route } from 'react-router-dom'
 // 一般组件
 import SelfNavLink from './components/SelfNavLikn'
 import Header from "./components/Header"
@@ -33,12 +33,8 @@ export default class App extends Component {
             <div className="panel">
               <div className="panel-body">
                 {/* 注册路由,编写路由变化 */}
-                <Switch> 
-                  <Route path="/about" component={About} />
-                  <Route path="/home" component={Home} />
-                  <Redirect to="/about"></Redirect>
-                </Switch>
-                
+                <Route path="/about" component={About} />
+                <Route path="/home" component={Home} />
               </div>
             </div>
           </div>

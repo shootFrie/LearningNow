@@ -26,6 +26,17 @@
     - [底部全选](#底部全选)
   - [react 内的ajax](#react-内的ajax)
   - [github搜索案例](#github搜索案例)
+- [React 路由](#react-路由)
+  - [SPA](#spa)
+  - [路由](#路由)
+    - [react-router](#react-router)
+    - [一般组件和路由组件](#一般组件和路由组件)
+    - [NavLink导航](#navlink导航)
+    - [Switch组件](#switch组件)
+    - [样式丢失、路由模糊和严格匹配](#样式丢失路由模糊和严格匹配)
+    - [路由模糊匹配与严格匹配](#路由模糊匹配与严格匹配)
+    - [Redirect 路由重定向](#redirect-路由重定向)
+    - [嵌套路由](#嵌套路由)
 # React笔记
 ## 简介及入门
   React 是构建用户界面的 Javascript 库，小巧而复杂，主要用于构建 UI 界面。Facebook研发的，后来用于Instagram，2013年开源。  
@@ -927,9 +938,217 @@ a 的href 需要有ref="noreferrer"
 1. 静态页面编写
 2. search模块编写axios获取值，设置代理。http://localhost:5000 作为中间服务器，对没有频繁请求导致没有请求的数据返回默认数据
 3. 创建一个改变状态的函数放父组件，子组件用函数修改状态
+前端请求后端数据
+**axios**  
 
-**兄弟组件互通信息 -- 订阅-发布机制**
-1.工具PubSubJS
+
+**兄弟组件互通信息 -- 订阅-发布机制** 
+消息订阅-发布机制  
+- 先订阅，再发布
+- 适用于任何组件间通信
+- 要在组件的componentWillUnmount中取消订阅
+1.工具PubSubJS 安装
 ```
 yarn add pubsub-js
 ```
+
+```
+// 引入
+import PubSub from 'pubsub-js'
+
+// 订阅 在componentDidMount
+this.token = PubSub.subscribe('订阅事件名', (_, data) => {
+  console.log("收到发布的信息：", data);
+}) 
+
+// 取消订阅 在componentWillUnmount
+PubSub.unsubscribe(this.token)
+
+// 发布信息
+PubSub.publish('订阅事件名', {xxx: xxx});
+```
+
+**fetch 请求**
+-	fetch: 原生函数，不再使用XmlHttpRequest对象提交ajax请求
+- 老版本浏览器可能不支持
+发送请求（关注分离化思想）  
+```JavaScript
+try {
+    const response = await fetch('/api/search/users2?q=' + keyword) // 检查是否能连接服务器
+    const data = await response.json()
+    // 请求成功后通知List更新列表， 状态 
+    PubSub.publish('upData', { isLording: false, users: data.items })
+} catch (error) {
+    PubSub.publish('upData', { isLording: false,  err: error })
+  }
+```
+# React 路由
+## SPA
+- 单页 web 应用
+- 整个应用只有一个完整页面
+- 点击页面中的链接不会刷新页面，只会做页面局部更新
+## 路由
+**工作原理**  
+路由匹配靠浏览器地址路径
+```Javascript
+// 先引用history.js 的cdn
+let history = History.createBrowserHistory(); // 方法一： 直接使用H5推出的history里的API，有的旧的浏览器可能不支持
+let history = History.createHashHistory(); // 方法二：hash值，（锚点，会多个#），不会引起页面刷新，但是地址会改变
+history.push(path); // 地址存放栈
+history.replace(path); // 地址存放栈 替换掉最上层的路径
+```
+### react-router
+用的地方
+- web react-router-dom
+  - 插件库，专门实现SPA应用
+- native 用react做原生开发
+- any
+<印记中文>  
+安装5版本router
+```
+ npm i react-router-dom@5
+```
+- BrowserRouter
+- HashRouter
+跳转页面, BrowserRouter是history的router  
+```Javascript
+<BrowserRouter>
+  <Link className="list-group-item" to="/about"></Link>
+  <Link className="list-group-item" to="/home"></Link>
+</BrowserRouter>
+  // Link 没有高亮效果,NavLink 有高亮效果,会追加activeClassName
+  <NavLink activeClassName="active" className="list-group-item" to="/home">Home</NavLink> 
+ {/* 注册路由,编写路由变化, 这里两个BrowserRouter就是两个路由实例,互相不相通 */}
+<BrowserRouter>
+  <Route path="/about" component={About} />
+  <Route path="/home" component={Home} />
+</BrowserRouter>
+```
+to 不识别大小写，路由版本部分大写会有问题
+BrowserRouter  直接在包住<App /> 可以实现一个路由实例.  
+
+### 一般组件和路由组件
+1. 写法不同一般组件:
+   1. 一般组件: <Header /> 
+   2. 路由组件: <Route path="/demo" component={Demo} />
+2. 存放位置不同: 
+   1. 一般组件 components
+   2. 路由组件 pages
+3. 接收到的props不同
+   1. 使用props获取标签传递属性
+   2. 路由组件 会收到路由返回的history, location, match
+      history:
+        action: "PUSH"
+        block: ƒ block(prompt)
+        createHref: ƒ createHref(location)
+        go: ƒ go(n)
+        goBack: ƒ goBack()
+        goForward: ƒ goForward()
+        length: 4
+        listen: ƒ listen(listener)
+        location: {pathname: '/about', search: '', hash: '', state: undefined, key: 'xbzwbq'}
+        push: ƒ push(path, state)
+        replace: ƒ replace(path, state)
+ 
+      location:
+        hash: ""
+        key: "xbzwbq"
+        pathname: "/about"
+        search: ""
+        state: undefined
+
+      match:
+        isExact: true
+        params: {}
+        path: "/about"
+        url: "/about"
+
+### NavLink导航
+activeClassName 自定义选中样式
+```
+<NavLink activeClassName="active" className="list-group-item" to="/about">About</NavLink>
+<NavLink activeClassName="active" className="list-group-item" to="/home">Home</NavLink> 
+```
+封装:  
+传递标签体内容<标签>标签体<\/标签>this.props.children拿到
+```
+传入
+<SelfNavLink to="/about" >About</SelfNavLink>
+也可以是
+<SelfNavLink to="/about" children="About"/>
+
+封装结构
+<NavLink activeClassName="active" className="list-group-item" {...this.props} /> 
+```
+- NavLink 可以实现路由链接高亮，通过activeClassName指定样式类名
+- 标签体内容是一个特殊的标签属性
+- 通过this.props.children可以获取标签题内容
+
+### Switch组件
+一般path和component是一一对应的
+让path匹配到了之后不再往下匹配；
+```
+没有switch的，两个组件都显示
+<Route path="/about" component={About} />
+<Route path="/about" component={Home} />
+
+有switch的,匹配到了就不再往下匹配；Home不显示
+<Switch> 
+<Route path="/about" component={About} />
+<Route path="/about" component={Home} />
+</Switch> 
+```
+
+### 样式丢失、路由模糊和严格匹配
+未知路由刷新找不到页面会直接到public/index.html
+原因public的css路径是相对路径
+或使用HashRouter
+1. public/index.html中引入样式时不写 ./ 写 /（常用）
+2. public/index.html中引入样式时不写 ./ 写 %PUBLIC_URL% (常用)
+3. 使用HashRouter
+
+yarn和npm混着用容易丢失包
+
+### 路由模糊匹配与严格匹配
+默认模糊匹配：【输入的路径】必须包含【匹配的路径】；  
+最左前缀匹配原则:从最左边开始依次匹配，匹配到可以显示，有不同就不能显示,如下面About能显示，Home不能；
+```
+{/* react中路由链接切换组件 */} 
+<SelfNavLink to="/about/ab" >About</SelfNavLink>
+<SelfNavLink to="/ab/home" >Home</SelfNavLink>
+
+{/* 注册路由,编写路由变化 */}
+<Switch> 
+  <Route path="/about" component={About} />
+  <Route path="/home" component={Home} />
+</Switch>
+```
+精准匹配, exact; 两种都开启了，如下面Home能显示，About不能
+```
+{/* react中路由链接切换组件 */} 
+<SelfNavLink to="/about/ab" >About</SelfNavLink>
+<SelfNavLink to="/home" >Home</SelfNavLink>
+
+{/* 注册路由,编写路由变化 */}
+<Switch> 
+  <Route exact = {true} path="/about" component={About} />
+  <Route exact  path="/home" component={Home} />
+</Switch>
+```
+严格匹配不能随便开启，有时会导致无法继续匹配二级路由；
+
+### Redirect 路由重定向
+Redirect一般写在路由的最下方
+```
+ {/* 注册路由,编写路由变化 */}
+<Switch> 
+  <Route path="/about" component={About} />
+  <Route exact path="/home" component={Home} />
+  <Redirect to="/about/"></Redirect>
+</Switch>
+```
+
+### 嵌套路由
+前面路由需要保留
+- 注册子路由要写上父路由的path值
+- 路由的匹配是按照注册路由的顺序进行的

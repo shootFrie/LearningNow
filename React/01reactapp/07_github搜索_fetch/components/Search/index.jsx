@@ -52,14 +52,14 @@ export default class Search extends Component {
     //   }
     // )
     //#region 
-    // 优化
+    // 优化fetch
     try {
-      const response = await fetch('/api/search/users?q=' + keyword)
+      const response = await fetch('/api/search/users2?q=' + keyword)
       const data = await response.json()
       // 请求成功后通知List更新列表， 状态 
       PubSub.publish('upData', { isLording: false, users: data.items })
     } catch (error) {
-      PubSub.publish('upData', { err: error })
+      PubSub.publish('upData', { isLording: false,  err: error })
     }
 
   }

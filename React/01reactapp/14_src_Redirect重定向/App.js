@@ -25,7 +25,7 @@ export default class App extends Component {
               <a class="list-group-item" href="./home.html">Home</a> */}
 
               {/* react中路由链接切换组件 */} 
-              <SelfNavLink to="/about" >About</SelfNavLink>
+              <SelfNavLink to="/about/ab" >About</SelfNavLink>
               <SelfNavLink to="/home" >Home</SelfNavLink>
             </div>
           </div>
@@ -35,8 +35,8 @@ export default class App extends Component {
                 {/* 注册路由,编写路由变化 */}
                 <Switch> 
                   <Route path="/about" component={About} />
-                  <Route path="/home" component={Home} />
-                  <Redirect to="/about"></Redirect>
+                  <Route exact path="/home" component={Home} />
+                  <Redirect to="/about/"></Redirect>
                 </Switch>
                 
               </div>
