@@ -37,6 +37,9 @@
     - [路由模糊匹配与严格匹配](#路由模糊匹配与严格匹配)
     - [Redirect 路由重定向](#redirect-路由重定向)
     - [嵌套路由](#嵌套路由)
+    - [向路由组件传递参数](#向路由组件传递参数)
+    - [replace 与 push](#replace-与-push)
+    - [编程式路由导航](#编程式路由导航)
 # React笔记
 ## 简介及入门
   React 是构建用户界面的 Javascript 库，小巧而复杂，主要用于构建 UI 界面。Facebook研发的，后来用于Instagram，2013年开源。  
@@ -1152,3 +1155,38 @@ Redirect一般写在路由的最下方
 前面路由需要保留
 - 注册子路由要写上父路由的path值
 - 路由的匹配是按照注册路由的顺序进行的
+
+### 向路由组件传递参数
+1. params参数 
+  - 路由链接 Link/NavLink携带参数 <Link to={`/home/message/${msgObj.id}/${msgObj.title}`}>{msgObj.title}</Link>
+  - Route注册路由声明接收：<Route path="/home/message/:id/:title" component={Detail}></Route>
+  - 子页面接收参数： const {id, title} = this.props.match.params;
+2. search 参数 
+  - 路由链接 Link/NavLink携带参数 <Link to={`/home/message/?id=${msgObj.id}&title=${msgObj.title}`}>{msgObj.title}</Link>
+  - Route注册路由 无需声明接收 <Route path="/home/message/detail" component={Detail}></Route>
+  - 接收参数： this.props.location.search
+  - 注：获取到的search是urlencoded编码字符串，需要借助querystring
+
+```
+取出来：
+import qs from "querystring" // react 内置
+"key=value&key=value" // urlencoded编码
+qs.Stringfy({a:1, b:2}); // a=1&b=2
+qs.parse("a=1&b=2"); // {a:1, b:2}
+```
+
+**报错信息：Uncaught Error: Objects are not valid as a React child**  
+原因是在render的return里面{}内的数据是个对象，不是个字符串
+
+3. state 参数 地址栏不会有参数
+  - 路由链接 Link/NavLink携带参数 <Link to={{pathname: "/home/message/detail", state:{id: "01", title:"title"}}}>{"title"}</Link>
+  - Route注册路由 无需声明接收 <Route path="/home/message/detail" component={Detail}></Route>
+  - 接收参数： this.props.location.state
+
+### replace 与 push 
+默认开启的是push模式，可以后退上一步；开启replace，直接在link路由链接上加replace
+```
+<Link replace to={{pathname: "/home/message/detail", state:{id: "01", title:"title"}}}>{"title"}</Link>
+```
+
+### 编程式路由导航
