@@ -40,6 +40,18 @@
     - [向路由组件传递参数](#向路由组件传递参数)
     - [replace 与 push](#replace-与-push)
     - [编程式路由导航](#编程式路由导航)
+      - [withRouter](#withrouter)
+    - [BrowerRouter 与 HashRouter的区别](#browerrouter-与-hashrouter的区别)
+  - [antd 按需引入](#antd-按需引入)
+- [Redux](#redux)
+  - [Redux 三个核心概念](#redux-三个核心概念)
+    - [action](#action)
+    - [reducer](#reducer)
+    - [store](#store)
+    - [例子](#例子)
+- [报错](#报错)
+  - [You are running `create-react-app` 5.0.0, which is behind the latest release (5.0.1).](#you-are-running-create-react-app-500-which-is-behind-the-latest-release-501)
+  - [ReactDOM.render is no longer supported in React 18.](#reactdomrender-is-no-longer-supported-in-react-18)
 # React笔记
 ## 简介及入门
   React 是构建用户界面的 Javascript 库，小巧而复杂，主要用于构建 UI 界面。Facebook研发的，后来用于Instagram，2013年开源。  
@@ -444,8 +456,9 @@ function speak(){
 ```
 
 #### refs与事件处理
+ref 被用来给元素或子组件注册引用信息
 - 字符串形式（不被推荐但能用-效能不高）
-- 回调函数形式 （内联函数更新时会调用两次，可忽略）
+- 回调函数形式 （内联函数更新时会调用两次，可忽略）回调形式的ref将在组件挂载或组件卸载时调用
 - createRef （最推荐）
 ```
 class Demo extends React.Component {
@@ -1190,3 +1203,108 @@ qs.parse("a=1&b=2"); // {a:1, b:2}
 ```
 
 ### 编程式路由导航
+this.props.history =
+- action: "PUSH"
+- block: ƒ block(prompt)
+- createHref: ƒ createHref(location)
+- go: ƒ go(n) -1后退1，2前进2
+- goBack: ƒ goBack()
+- goForward: ƒ goForward()
+- length: 35
+- listen: ƒ listen(listener)
+- location: {pathname: '/home/message/detail', search: '', hash: '', - - - - state: {…}, key: 'py0fok'}
+- push: ƒ push(path, state)
+- replace: ƒ replace(path, state)
+
+#### withRouter
+**只有路由组件才有history**
+withRouter可以把一般组件包装就有路由组件的api; 
+withRouter 可以加工一般组件，让一般组件具备路由组件所特有的API
+withRouter的返回值是一个新组件
+```
+import {withRouter} from 'react-router-dom'
+class Header extends Component {}
+export default withRouter(Header) 
+```
+### BrowerRouter 与 HashRouter的区别
+1. 底层原理不一样
+   1. BrowserRouter 使用的是H5的history API，不兼容IE9以下版本
+   2. HashRouter 使用的是URL的哈希值
+2. path表现形式不一样
+   1. BrowserRouter 的路径没有#，HashRouter有， localhost:3000/#/demo
+3. 刷新后路由对state参数的影响
+   1. BrowserRouter没有任何影响，因为state保存在history对象中
+   2. HashRouter刷新后会倒是路由state参数的丢失
+4. 注：HashRouter可以用于解决一些路径错误问题
+   
+## antd 按需引入
+ant design of React 安装
+```
+yarn add antd
+```
+eject 可以暴露配置
+```
+yarn eject
+```
+为了改webpack.config.js 不建议暴露react脚手架配置；
+可以 引入 react-app-rewired并修改package.json的启动配置，再新建个文件config-overrides.js修改默认配置。再使用customize-cra 库去执行修改
+```
+yarn add react-app-rewired customize-cra
+```
+[参考, ant Design React 在 create-react-app 中使用](https://3x.ant.design/docs/react/use-with-create-react-app-cn#header)
+
+***babel-plugin-import 是一个用于按需加载组件代码和样式的 babel 插件***
+
+antd 修改样式、自定义主题，安装less，修改config-overrides.js; 如果不成功，试着修改less版本到文档相对的版本
+
+# Redux
+- $\color{red}{状态管理}$ 的 JS库
+- 可以用在react,angular,vue等项目中,但基本与react配合使用
+- 作用：集中式管理react应用中多个组件共享的状态
+- 使用情况：
+  - 互通组件状态
+  - 改变组件状态
+
+## Redux 三个核心概念
+### action 
+1. 动作的对象
+2. 包含两个属性
+   1. type ： 标识属性，值为字符串，唯一，必要属性
+   2. data : 数据属性，值类型任意，可选属性
+
+### reducer
+1. 用于初始化状态、加工状态
+2. 加工时，根据旧的state和action，产生新的state的纯函数。
+
+### store
+1. 将state、action、reducer联系在一起的对象
+2. 
+
+
+### 例子
+可选择加数
+
+
+# 报错
+## You are running `create-react-app` 5.0.0, which is behind the latest release (5.0.1).
+版本过低，升级;或按报错解决方案
+```
+npm uninstall -g create-react-app
+
+npx create-react-app xxx文件名
+```
+## ReactDOM.render is no longer supported in React 18.
+React团队在3月29日新推出了React v18.0版本，现在npm 默认的就是18版本，由于React 18 不再支持 ReactDOM.render。在index.js入口文件中改用 createRoot即可消除警告
+```
+import React from 'react'
+// import ReactDOM from 'react-dom' // 旧代码
+import App from './App'
+
+import { createRoot } from 'react-dom/client';
+
+const container = document.getElementById('root')
+const root = createRoot(container)
+root.render(<App />)
+// ReactDOM.render(<App />, document.getElementById('root'))// 旧代码
+
+```

@@ -1,6 +1,12 @@
 import React, { Component } from 'react'
 
 export default class New extends Component {
+  // 几秒路由跳转
+  // componentDidMount(){
+  //   setTimeout(() => {
+  //     this.props.history.push("/home/message")
+  //   }, 1000)
+  // }
   render() {
     return (
       <div>
