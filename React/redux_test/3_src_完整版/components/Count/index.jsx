@@ -1,40 +1,50 @@
 import React, { Component } from 'react'
+import store from '../../redux/store' // 引入store，用于获取redux中
+// 引入createIncrementAction
+import {createIncrementAction, createDecrementAction} from '../../redux/count_action'
 
 export default class Count extends Component {
-  state = {count: 0}
+  state = {as: 0}
+
+  // componentDidMount() {
+  //   // 检测redux中状态中的变化，只要变化就调用render
+  //   store.subscribe(() => {
+  //     this.setState({}) // 有效率问题
+  //   })
+  // }
+
   // 加法
   increase = () => {
     const { value } = this.selectNumber
-    const { count } = this.state
-    this.setState({count: count + value*1})
+    // 通知reduce执行加法
+    store.dispatch(createIncrementAction(value*1))
   }
   // 减法
   decrease = () => {
     const { value } = this.selectNumber
-    const { count } = this.state
-    this.setState({count: count-value*1})
+    // 通知reduce执行减法
+    store.dispatch(createDecrementAction(value*1))
   }
   // 当前求和为奇数再加
   increaseIfOdd = () => {
     const { value } = this.selectNumber
-    const { count } = this.state
+    const count = store.getState()
     if((count % 2) !== 0) {
-      this.setState({count: count + value*1})
+      store.dispatch(createIncrementAction(value*1))
     }
   }
 
   increaseIfAsync = () => {
-    const { value } = this.selectNumber
-    const { count } = this.state
+    const { value } = this.selectNumber 
     setTimeout(() => {
-      this.setState({count: count + value*1})
+      store.dispatch(createIncrementAction(value*1))
     }, 500)
   }
 
   render() {
     return (
       <div>
-        <h2>当前求和为: {this.state.count}</h2>
+        <h2>当前求和为: {store.getState()}</h2>
         <select ref={c => this.selectNumber = c}>
           <option value="1">1</option>
           <option value="2">2</option>

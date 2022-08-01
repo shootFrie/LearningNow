@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    <h2>{{person.name}} - {{person.age}}</h2>
+    <div v-text="msg"></div>
+    <p v-html="po"></p>
+    <ul v-html="person.name">
+      <li>1</li>
+      <li>2</li>
+      <li>3</li>
+    </ul>
+    <button v-on:click="handleClick">点击</button>
+    <button @click="handleClick">点击2@click</button>
+  </div>
+  <script src="./Observer.js"></script>
+  <script src="./MVue.js"></script>
+  <script>
+    let vm = new MVue({
+      el: '#app',
+      data:{
+        person: {
+          name: "AAA",
+          age: 99
+        },
+        msg: "学习MVVM原理",
+        po: '<span>q11</span>'
+      }, 
+      methods: {
+        handleClick(){
+          console.log("点击了动一动，查看this是", this);
+        }
+      }
+    })
+  </script>
+</body>
+</html>

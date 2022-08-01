@@ -48,7 +48,34 @@
     - [action](#action)
     - [reducer](#reducer)
     - [store](#store)
-    - [例子](#例子)
+    - [求和例子](#求和例子)
+      - [1.求和简化版](#1求和简化版)
+      - [2.求和完整版](#2求和完整版)
+      - [3.求和异步action](#3求和异步action)
+      - [4.求和_react_redux基本使用](#4求和_react_redux基本使用)
+      - [5.求和_求和优化](#5求和_求和优化)
+      - [6.求和_react_redux数据共享](#6求和_react_redux数据共享)
+    - [redux开发者工具](#redux开发者工具)
+  - [高阶函数和纯函数](#高阶函数和纯函数)
+    - [纯函数](#纯函数)
+    - [高阶函数](#高阶函数)
+- [扩展](#扩展)
+  - [setState更新状态的2种写法](#setstate更新状态的2种写法)
+  - [2. lazyLoad](#2-lazyload)
+  - [注意： lazy(() => import('./About')) 别加东西，加了个大括号报错找了半天问题](#注意-lazy--importabout-别加东西加了个大括号报错找了半天问题)
+  - [3. Hooks](#3-hooks)
+    - [1. React Hook/Hooks是什么?](#1-react-hookhooks是什么)
+    - [2. 三个常用的Hook](#2-三个常用的hook)
+    - [3. State Hook](#3-state-hook)
+    - [4. Effect Hook](#4-effect-hook)
+      - [5. Ref Hook](#5-ref-hook)
+  - [4. Fragment](#4-fragment)
+    - [使用](#使用)
+  - [5. Context](#5-context)
+    - [理解](#理解)
+    - [使用](#使用-1)
+    - [注意](#注意)
+- [打包](#打包)
 - [报错](#报错)
   - [You are running `create-react-app` 5.0.0, which is behind the latest release (5.0.1).](#you-are-running-create-react-app-500-which-is-behind-the-latest-release-501)
   - [ReactDOM.render is no longer supported in React 18.](#reactdomrender-is-no-longer-supported-in-react-18)
@@ -621,7 +648,8 @@ cnpm -v 检查
 2. 创建项目
 
 create-react-app 01reactapp(项目名称)
-// 创建时间较长
+// 创建时间较长 报错不是内部命令改为
+npx create-react-app 01reactapp 没用
 
 //运行
 npm start
@@ -713,6 +741,16 @@ serviceWorker.unregister();
 // 报告web重要信息，非必须  
 reportWebVitals();
 ```
+React18 index.js有新改变
+```
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App'
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />)
+```
+
 	
 	  - App.css 全局css 在 App.js 中导入, 函数式组件 function App(){}
 	  - App.test.js 单元对于组件的测试（较少使用，测试方便下次高效使用）
@@ -1256,14 +1294,24 @@ yarn add react-app-rewired customize-cra
 ***babel-plugin-import 是一个用于按需加载组件代码和样式的 babel 插件***
 
 antd 修改样式、自定义主题，安装less，修改config-overrides.js; 如果不成功，试着修改less版本到文档相对的版本
-
 # Redux
+redux_test 文件夹中
 - $\color{red}{状态管理}$ 的 JS库
 - 可以用在react,angular,vue等项目中,但基本与react配合使用
 - 作用：集中式管理react应用中多个组件共享的状态
 - 使用情况：
   - 互通组件状态
   - 改变组件状态
+
+redux 可以有react-redux和redux
+react-redux 模型
+  1. 所有UI组件都应该包裹一个容器组件，因为它们是父子关系
+  2. 容器组件是真正和redux打交道的，里面可以随意的使用redux的api
+  3. UI组件不能使用任何redux的api
+  4. 容器组件会传给UI组件： 
+     1. redux中所保存的状态
+     2. 用于操作状态的方法
+  5. 备注：容器给UI床底：状态、操作状态的方法，均通过props传递。
 
 ## Redux 三个核心概念
 ### action 
@@ -1272,6 +1320,12 @@ antd 修改样式、自定义主题，安装less，修改config-overrides.js; �
    1. type ： 标识属性，值为字符串，唯一，必要属性
    2. data : 数据属性，值类型任意，可选属性
 
+捕获的action
+- Object类型的一般对象 - 同步
+- 函数 - 异步
+
+store.dispatch() 是View 发出 Action 的唯一办法
+
 ### reducer
 1. 用于初始化状态、加工状态
 2. 加工时，根据旧的state和action，产生新的state的纯函数。
@@ -1279,11 +1333,348 @@ antd 修改样式、自定义主题，安装less，修改config-overrides.js; �
 ### store
 1. 将state、action、reducer联系在一起的对象
 2. 
+```
+// 引入createStore 专门用于创建redux中最为核心的store对象
+import { creactStore } from 'redux'
 
+creactStore()
+创建store就已经制定了redux
+```
 
-### 例子
+### 求和例子
 可选择加数
+安装redux
+```
+yarn add redux
+```
+reducers 只能修改状态但是不能刷新页面，
+```
+// 单个文件
+ componentDidMount() {
+    // 检测redux中状态中的变化，只要变化就调用render
+    store.subscribe(() => {
+      this.setState({}) // 有效率问题
+    })
+  }
 
+  // 或直接在index.js里面
+import React from 'react'
+// import ReactDOM from 'react-dom'
+import App from './App'
+import store from './redux/store'
+
+ReactDOM.render(<App />, document.getElementById('root'))
+// 整个app重加载
+import { createRoot } from 'react-dom/client';
+// ReactDOM.render(<App />, document.getElementById('root'))
+import store from './redux/store'
+
+const container = document.getElementById('root');
+const root = createRoot(container);
+root.render(<App />)
+// React 18 不支持
+// ReactDOM.render(<App />, document.getElementById('root'))
+
+store.subscribe(() => {
+  root.render(<App />)
+})
+
+```
+
+#### 1.求和简化版
+1. 去除Count组件自身状态
+2. 创建store，reduce文件  
+    - src
+      - store.js
+      - count_reducer.js
+3. store.js 
+   1. 引入redux中createStore函数，创建一个store
+   2. createStore调用时传入一个为其服务的reducer
+   3. 暴露store对象
+4. count_reducer.js
+   1. reducer本质是一个函数，接收preState, action,返回加工后的状态，
+   2. reducer的两个作用：初始化状态，加工状态
+   3. reducer第一次调用时，是store自动触发，
+      1. 传递的是preState是undefined
+      2. 传递的action是{type: '@@REDUX/INIT_a.2.b.4'}
+5. 在index.js 中检测store中状态的改变，一旦发生改变重新渲染<App/>
+   1. reducer只负责管理状态，至于状态的改变驱动着页面展示需要自己写
+```
+store.subscribe(() => {
+  root.render(<App />) 
+})
+```
+
+#### 2.求和完整版
+新增：
+1. count_action.js 创建action对象
+2. constant.js 放置常量
+
+#### 3.求和异步action
+1. 目的：延迟动作不交给组件自身，交给action
+2. 何时需要异步action： 想要对状态精心操作，但是具体的数据需要靠异步任务返回
+3. 具体
+   1. 中间件 yarn add redux-thunk， 并配置store中
+   2. 创建action的函数不再返回一般对象，而是一个函数，该函数中写异步任务
+   3. 异步任务有结果后，分发一个同步的action去真正操作数据
+   4. 异步action不是必须要写，可以自己等待异步任务的结果了再去分发同步action
+
+
+#### 4.求和_react_redux基本使用
+1. 明确两概念
+   1. UI组件不能使用任何redux的api，只负责页面呈现、交互等
+   2. 容器组件负责redux通信，将结果交给UI组件
+2. 如何创建一个容器 -- 靠react-redux的connect函数
+   1. connect(mapStateToProps,mapDispatchToProps)(UI组件)
+      1. mapStateToProps 映射状态，返回值是一个对象
+      2. mapDispatchToProps 映射操作状态的方法，返回值是一个函数
+3. 注：容器中的store是靠props传进去的，而不是在容器组件直接引入
+4. 注：mapDispatchToProps也能是一个对象，传入store事件函数
+
+#### 5.求和_求和优化
+1. 容器组件和UI组件整合成一个文件
+2. 无需自己给容器组件传递store,给<App />包裹一个<Provider store={store}>即可
+3. 使用了react-redux后也不用自己检测redux中状态的改变了,容器组件可以自动完成这工作
+4. mapDispatchToProps也可以简单写成一个对象
+5. 一个组件要和redux"打交道"要经历哪几步
+   1. 定义好UI组件 -- 不暴露
+   2. 引入connect生成一个容器组件,并暴露,写法如下
+   ```
+    connect(
+      state => ({key: value})
+      {key: xxxxAction}
+    )(UI组件)
+   ```
+   3. 在UI组件中通过this.props.xxxx读取和操作状态
+   4. 
+provider组件是为了不用写store，直接在index.js 里面引入Provider包住<App/>  
+为了解决容器组件包住UI组件，多个UI组件则需要写的组件成倍增长问题，整合UI组件和容器组件  
+可以一个js文件写两个类.
+
+#### 6.求和_react_redux数据共享
+1. 定义一个Person组件，和Count组件数据共享
+2. 为Person组件编写：reducer，action，配置constant常量
+3. 重点：Person的reducer和Count的Reducer要使用combinReducer进行合并，合并后的总状态试是一个对象
+4. 交给store的是总reducer，最后注意在组件中取出状态的时候，记得“取到位”
+reducer 中return出去的数据必须有代码面上的改变，不能同一个preState赋值新的return出去，store会觉得没有改变从而不更新
+```
+import {createStore, applyMiddleware, combineReducers} from 'redux'
+import CountReducer from './reducer/count'
+// 中间件 异步action调用
+import thunk from 'redux-thunk'
+import PersonReducer from './reducer/person'
+
+const allRedecer = combineReducers({
+  sum: CountReducer,
+  personAdd: PersonReducer
+})
+export default createStore(allRedecer, applyMiddleware(thunk))
+
+```
+### redux开发者工具
+1. 浏览器扩展安装 Redux DevTools
+2. 项目安装 yarn add redux-devtools-extension
+3. 在store引入
+```
+import {composeWithDevTools} from 'redux-devtools-extension'
+
+const allRedecer = combineReducers({
+  sum: CountReducer,
+  personAdd: PersonReducer
+})
+// 不要异步的话可以不要 
+export default createStore(allRedecer, composeWithDevTools(applyMiddleware(thunk)))
+
+```
+
+## 高阶函数和纯函数
+### 纯函数
+纯函数： 一类特别的函数，返回结果只依赖其参数。只要是同样的输入（实参），必定会得到同样的输出（返回）
+**约束：**  
+- 不能改写参数数据
+- 不会有任何副作用，例如网络请求，输入和输出设备
+- 不能调用Date.now()或者Math.random()等不纯的方法
+**redux的reducer函数必须是个纯函数**
+### 高阶函数
+高阶函数: 满足下列任一规范，这个就是个高阶函数
+1. 若A函数接收的参数是个函数，那么A可以称为高阶函数
+2. 若A函数返回的返回值是一个函数，那么A可以称为高阶函数
+  - 常见的有：Promise， setTimeout， setInterval， Array.map
+  - 函数柯里化： 通过函数调用返回函数，实现多次接收参数最后统一处理的函数编码形式。
+
+# 扩展
+## setState更新状态的2种写法
+
+```
+	(1). setState(stateChange, [callback])------对象式的setState
+            1.stateChange为状态改变对象(该对象可以体现出状态的更改)
+            2.callback是可选的回调函数, 它在状态更新完毕、界面也更新后(render调用后)才被调用
+					
+	(2). setState(updater, [callback])------函数式的setState
+            1.updater为返回stateChange对象的函数。
+            2.updater可以接收到state和props。
+            4.callback是可选的回调函数, 它在状态更新、界面也更新后(render调用后)才被调用。
+总结:
+		1.对象式的setState是函数式的setState的简写方式(语法糖)
+		2.使用原则：
+				(1).如果新状态不依赖于原状态 ===> 使用对象方式
+				(2).如果新状态依赖于原状态 ===> 使用函数方式
+				(3).如果需要在setState()执行后获取最新的状态数据, 要在第二个callback函数中读取
+this.setState((state, props) => {
+  return {title: state.title + '1'}
+}, ()=> {console.log('改变后更新显示')})
+```
+------
+
+## 2. lazyLoad
+路由组件的lazyLoad
+1.8
+```js
+	//1.通过React的lazy函数配合import()函数动态加载路由组件 ===> 路由组件代码会被分开打包
+	import Loading from './Loading' // suspense 的loaing
+	const About = lazy(() => import('./About')) 
+	
+	//2.通过<Suspense>指定在加载得到路由打包文件前显示一个自定义loading界面
+	<Suspense fallback={<h1>loading.....</h1>}>
+        <Route>
+            <Route path="/xxx" element={<About />}/>
+            <Redirect to="/login"/>
+        </Route>
+    </Suspense>
+```
+注意： lazy(() => import('./About')) 别加东西，加了个大括号报错找了半天问题
+---------------
+
+## 3. Hooks
+
+### 1. React Hook/Hooks是什么?
+
+```
+(1). Hook是React 16.8.0版本增加的新特性/新语法
+(2). 可以让你在函数组件中使用 state 以及其他的 React 特性
+```
+
+### 2. 三个常用的Hook
+
+```
+(1). State Hook: React.useState()
+(2). Effect Hook: React.useEffect()
+(3). Ref Hook: React.useRef()
+```
+
+### 3. State Hook
+
+```
+(1). State Hook让函数组件也可以有state状态, 并进行状态数据的读写操作
+(2). 语法: const [xxx, setXxx] = React.useState(initValue)  
+(3). useState()说明:
+  参数: 第一次初始化指定的值在内部作缓存
+  返回值: 包含2个元素的数组, 第1个为内部当前状态值, 第2个为更新状态值的函数
+(4). setXxx()2种写法:
+   setXxx(newValue): 参数为非函数值, 直接指定新的状态值, 内部用其覆盖原来的状态值
+   setXxx(value => newValue): 参数为函数, 接收原本的状态值, 返回新的状态值, 内部用其覆盖原来的状态值
+
+```
+
+### 4. Effect Hook
+
+```
+(1). Effect Hook 可以让你在函数组件中执行副作用操作(用于模拟类组件中的生命周期钩子)
+(2). React中的副作用操作:
+        发ajax请求数据获取
+        设置订阅 / 启动定时器
+        手动更改真实DOM
+(3). 语法和说明: 
+        useEffect(() => { 
+          // 在此可以执行任何带副作用操作
+          return () => { // 在组件卸载前执行
+            // 在此做一些收尾工作, 比如清除定时器/取消订阅等
+          }
+        }, [stateValue]) // 如果指定的是[], 回调函数只会在第一次render()后执行
+    
+(4). 可以把 useEffect Hook 看做如下三个函数的组合
+        componentDidMount()
+        componentDidUpdate()
+    	componentWillUnmount() 
+
+1.8 的销毁是
+index.js 暴露root
+组件中用root.unmount()销毁组件
+```
+
+#### 5. Ref Hook
+
+```
+(1). Ref Hook可以在函数组件中存储/查找组件内的标签或任意其它数据
+(2). 语法: const refContainer = useRef()
+(3). 作用:保存标签对象,功能与React.createRef()一样
+```
+------
+## 4. Fragment
+
+### 使用
+
+	<Fragment key={}><Fragment>
+	<></>
+  key 参与遍历需要
+包一层隐藏
+
+## 5. Context
+
+### 理解
+
+> 一种组件间通信方式, 常用于【祖组件】与【后代组件】间通信
+
+### 使用
+
+```js
+1) 创建Context容器对象：
+	const XxxContext = React.createContext()  
+	
+2) 渲染子组时，外面包裹xxxContext.Provider, 通过value属性给后代组件传递数据：
+	<xxxContext.Provider value={数据}>
+		子组件
+    </xxxContext.Provider>
+    
+3) 后代组件读取数据：
+
+	//第一种方式:仅适用于类组件 
+	static contextType = xxxContext  // 声明接收context
+	this.context // 读取context中的value数据
+	  
+	//第二种方式: 函数组件与类组件都可以
+	  <xxxContext.Consumer>
+	    {
+	      value => ( // value就是context中的value数据
+	        要显示的内容
+	      )
+	    }
+	  </xxxContext.Consumer>
+```
+
+### 注意
+
+	在应用开发中一般不用context, 一般都用它的封装react插件
+
+<hr/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 打包
+```
+npm run  build
+```
 
 # 报错
 ## You are running `create-react-app` 5.0.0, which is behind the latest release (5.0.1).
