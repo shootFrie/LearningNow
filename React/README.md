@@ -59,6 +59,7 @@
   - [高阶函数和纯函数](#高阶函数和纯函数)
     - [纯函数](#纯函数)
     - [高阶函数](#高阶函数)
+- [Flux](#flux)
 - [扩展](#扩展)
   - [setState更新状态的2种写法](#setstate更新状态的2种写法)
   - [2. lazyLoad](#2-lazyload)
@@ -79,6 +80,15 @@
 - [报错](#报错)
   - [You are running `create-react-app` 5.0.0, which is behind the latest release (5.0.1).](#you-are-running-create-react-app-500-which-is-behind-the-latest-release-501)
   - [ReactDOM.render is no longer supported in React 18.](#reactdomrender-is-no-longer-supported-in-react-18)
+  - [React Hook useEffect has a missing dependency](#react-hook-useeffect-has-a-missing-dependency)
+- [升级](#升级)
+- [项目笔记](#项目笔记)
+  - [导航与路由](#导航与路由)
+    - [导航](#导航)
+    - [路由传参](#路由传参)
+  - [组合和继承](#组合和继承)
+  - [vue tag标签路由封装](#vue-tag标签路由封装)
+  - [使用插件 better-scroll](#使用插件-better-scroll)
 # React笔记
 ## 简介及入门
   React 是构建用户界面的 Javascript 库，小巧而复杂，主要用于构建 UI 界面。Facebook研发的，后来用于Instagram，2013年开源。  
@@ -1501,6 +1511,9 @@ export default createStore(allRedecer, composeWithDevTools(applyMiddleware(thunk
 2. 若A函数返回的返回值是一个函数，那么A可以称为高阶函数
   - 常见的有：Promise， setTimeout， setInterval， Array.map
   - 函数柯里化： 通过函数调用返回函数，实现多次接收参数最后统一处理的函数编码形式。
+# Flux
+Flux是架构思想, 解决软件的架构问题，和MVC是同一类东西，但是更清晰简单。  
+Facebook Flux是用来构建客户端Web应用的应用框架，它利用**单向数据流**的方式来组合React中的视图组件。  
 
 # 扩展
 ## setState更新状态的2种写法
@@ -1593,9 +1606,14 @@ this.setState((state, props) => {
         }, [stateValue]) // 如果指定的是[], 回调函数只会在第一次render()后执行
     
 (4). 可以把 useEffect Hook 看做如下三个函数的组合
-        componentDidMount()
-        componentDidUpdate()
+        componentDidMount() useEffect(()=>{}, [])
+        componentDidUpdate() useEffect(()=>{}) 每次更新都会调用
     	componentWillUnmount() 
+      useEffect(()=>{
+        return ()=>{
+        //清理函数
+        }
+      }, [])
 
 1.8 的销毁是
 index.js 暴露root
@@ -1606,8 +1624,11 @@ index.js 暴露root
 
 ```
 (1). Ref Hook可以在函数组件中存储/查找组件内的标签或任意其它数据
-(2). 语法: const refContainer = useRef()
+(2). 语法: const refContainer = useRef() 拿到元素 refContainer.current
 (3). 作用:保存标签对象,功能与React.createRef()一样
+ref={xxx}
+xxx.current
+可以用于父组件调用子组件方法，forwardRef()
 ```
 ------
 ## 4. Fragment
@@ -1618,7 +1639,6 @@ index.js 暴露root
 	<></>
   key 参与遍历需要
 包一层隐藏
-
 ## 5. Context
 
 ### 理解
@@ -1662,15 +1682,6 @@ index.js 暴露root
 
 
 
-
-
-
-
-
-
-
-
-
 # 打包
 ```
 npm run  build
@@ -1699,3 +1710,96 @@ root.render(<App />)
 // ReactDOM.render(<App />, document.getElementById('root'))// 旧代码
 
 ```
+## React Hook useEffect has a missing dependency
+这里是用useState()已经声明了变量，在useEffect()里面使用会报  
+解决方法
+1. 去除eslint检测 //eslint-disable-next-line react-hooks/exhaustive-deps
+2. 将方法放置在useEffect中
+```
+useEffect(() => {
+params...
+}, [params])
+
+```
+
+# 升级
+React Router v5 升级v6
+ yarn add react-router-dom@6
+
+
+嵌套路由--路由容器
+```
+router.js
+ <Route path="/movie" element={<Movie />}>
+    <Route index element={<NowPlaying />}></Route>
+    <Route path="nowplaying" element={<NowPlaying />}></Route>
+    <Route path="comingsoon" element={<ComingSoon />}></Route>
+  
+  </Route>
+
+Movie.jsx
+<OutLet></OutLet>
+```
+
+# 项目笔记
+## 导航与路由
+### 导航
+- 声明式导航 用react-dom-router封装好的
+  - Link 标签
+  - NavLink 标签 能匹配路由样式isActive
+- 编程式导航
+  - 18之前使用withRouter 【没用过】
+  - 18 使用useNavigator()
+```
+const navigate = useNavigate()
+
+const handleClick = (id) => {
+  navigate(`/detail?id=${id}`)
+}
+
+// ----标签绑定事件
+<div onClick={() => {handleClick("123")}}><div>
+```
+### 路由传参
+1. 一种地址栏形式是: useNavigate()("/xx?id=xxx")
+   1. 路由 <Route path="/xxx" element={<Xxx />}><Route>
+   2. 接收参数 
+   ```
+   import { useSearchParams } from 'react-router-dom'
+    const [searchParams, setSearchParams] = useSearchParams()
+    console.log(searchParams.get("id"))
+   ```
+2. 一种地址栏形式是: /xx/idxxx
+   1. 路由 <Route path="/xxx/:myId" element={<Xxx />}><Route>
+   2. 接收参数
+```
+import { useParams } from 'react-router-dom'
+const params = useParams()
+console.log(param.myId)
+```
+
+## 组合和继承
+类似vue slot功能，占据位置可以在组件中加东西
+```
+function Dialog(props){
+  return (
+    <header id="header">
+      {props.children}
+      <h1>{props.title || "喵喵电影"}</h1>
+    </header>
+  )
+}
+
+function AA(){
+  return (){
+    <Dialog>
+      <input type="text"/>
+    </Dialog>
+  }
+}
+```
+## vue tag标签路由封装
+useLocation() 获取pathName 对比一下
+## 使用插件 better-scroll
+forwardRef
+HOC高阶函数嵌套 
