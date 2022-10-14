@@ -13,5 +13,5 @@ const allRedecer = combineReducers({
   sum: CountReducer,
   personAdd: PersonReducer
 })
-// 不要异步的话可以不要 
+// 不要异步的话可以不要 applyMiddleware中间件传入并加thunk composeWithDevTools 开发工具
 export default createStore(allRedecer, composeWithDevTools(applyMiddleware(thunk)))

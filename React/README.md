@@ -10,6 +10,12 @@
       - [state-组件内变量](#state-组件内变量)
       - [props-父传子](#props-父传子)
       - [refs与事件处理](#refs与事件处理)
+    - [组件间的通信](#组件间的通信)
+    - [Context](#context)
+    - [理解](#理解)
+    - [使用](#使用)
+    - [注意](#注意)
+    - [插槽](#插槽)
   - [事件处理](#事件处理)
   - [收集表单数据](#收集表单数据)
   - [生命周期](#生命周期)
@@ -27,7 +33,7 @@
   - [react 内的ajax](#react-内的ajax)
   - [github搜索案例](#github搜索案例)
 - [React 路由](#react-路由)
-  - [SPA](#spa)
+  - [SPA（single-page application）](#spasingle-page-application)
   - [路由](#路由)
     - [react-router](#react-router)
     - [一般组件和路由组件](#一般组件和路由组件)
@@ -43,6 +49,7 @@
       - [withRouter](#withrouter)
     - [BrowerRouter 与 HashRouter的区别](#browerrouter-与-hashrouter的区别)
   - [antd 按需引入](#antd-按需引入)
+- [Flux](#flux)
 - [Redux](#redux)
   - [Redux 三个核心概念](#redux-三个核心概念)
     - [action](#action)
@@ -59,7 +66,6 @@
   - [高阶函数和纯函数](#高阶函数和纯函数)
     - [纯函数](#纯函数)
     - [高阶函数](#高阶函数)
-- [Flux](#flux)
 - [扩展](#扩展)
   - [setState更新状态的2种写法](#setstate更新状态的2种写法)
   - [2. lazyLoad](#2-lazyload)
@@ -69,13 +75,10 @@
     - [2. 三个常用的Hook](#2-三个常用的hook)
     - [3. State Hook](#3-state-hook)
     - [4. Effect Hook](#4-effect-hook)
-      - [5. Ref Hook](#5-ref-hook)
-  - [4. Fragment](#4-fragment)
-    - [使用](#使用)
-  - [5. Context](#5-context)
-    - [理解](#理解)
+    - [5. Ref Hook](#5-ref-hook)
+  - [标签无包裹 Fragment](#标签无包裹-fragment)
     - [使用](#使用-1)
-    - [注意](#注意)
+  - [useCallback 记忆函数](#usecallback-记忆函数)
 - [打包](#打包)
 - [报错](#报错)
   - [You are running `create-react-app` 5.0.0, which is behind the latest release (5.0.1).](#you-are-running-create-react-app-500-which-is-behind-the-latest-release-501)
@@ -383,6 +386,30 @@ let element2 = (
 
   </script>
 ```
+setState 更新
+- setState在处在同步的逻辑中更新是异步的
+```javascript
+
+handleClick = () => {
+  this.setState({count : this.state.count + 1})
+  console.log(this.state.count) // 1
+  this.setState({count : this.state.count + 1})
+  this.setState({count : this.state.count + 1})
+} // 输出 2
+```
+- setState处在异步的逻辑中更新是同步的
+```javascript
+
+handleClick = () => {
+  setTimeout(function(){
+    this.setState({count : this.state.count + 1})
+  console.log(this.state.count) // 2
+  this.setState({count : this.state.count + 1})
+  this.setState({count : this.state.count + 1})
+  }, 0) 
+
+} // 输出 4
+```
 #### props-父传子
 	- 基本使用
 ```
@@ -576,6 +603,80 @@ class Demo extends React.Component {
     ReactDOM.render(<Demo />, document.getElementById("contain"))
 ```
 
+### 组件间的通信
+1. 父子之间通信
+   1. 传递数据（父传子）与传递方法（子传父）
+   2. ref标记(父组件拿到子组件的引用，从而调用子组件的方法)
+      1. 在父组件中消除子组件的input输入框的value值， this.refs.form.reset()
+2. 非父子组件通信方式
+   1. 状态提升（中间人模式） - 概括就是多个组件需要共享的状态提升到它们最近的父组件，在父组件上改变这个状态再通过props分发给子组件
+   2. 发布订阅模式实现
+   3. context状态树 GlobalContext
+
+### Context
+### 理解
+
+> 一种组件间通信方式, 常用于【祖组件】与【后代组件】间通信
+
+### 使用
+
+```js
+1) 创建Context容器对象：
+	const XxxContext = React.createContext()  
+	
+2) 渲染子组时，外面包裹xxxContext.Provider, 通过value属性给后代组件传递数据：
+	<xxxContext.Provider value={数据}>
+		子组件
+    </xxxContext.Provider>
+    
+3) 后代组件读取数据：
+
+	//第一种方式:仅适用于类组件 
+	static contextType = xxxContext  // 声明接收context
+	this.context // 读取context中的value数据
+	  
+	//第二种方式: 函数组件与类组件都可以
+	  <xxxContext.Consumer>
+	    {
+	      value => ( // value就是context中的value数据
+	        要显示的内容
+	      )
+	    }
+	  </xxxContext.Consumer>
+```
+
+### 注意
+
+	在应用开发中一般不用context, 一般都用它的封装react插件
+
+<hr/>
+
+
+
+
+### 插槽
+子组件中放{props.children}
+```javascript
+// 父组件
+export default function Parent() {
+  return (
+    <div>
+       <Child>
+        你好！
+       </Child>
+    </div>
+  )
+}
+// 子组件
+function Child(props){
+  return (
+    <div>
+      {props.children}
+    </div>
+  )
+}
+
+```
 
 ## 事件处理
 - onClick ; onXxxx
@@ -616,18 +717,20 @@ class Demo extends React.Component {
 ## 收集表单数据
 - 受控组件
 - 非受控组件
+
+
 ## 生命周期
 - 旧 
   - 挂载时componentWillMount
-  - 挂载时render
+  - 挂载时render 只能访问this.props 和this.state, 不允许修改状态和DOM输出
   - 挂载时componentDidMount
   - 父组件更新子组件 componentWillRecevieProp
   - shouldComponentUpdate [setState]
   - componentWillUpdate [foreceUpdate()]
   - 父组件更新子组件 render
-  - componentDidUpdate
+  - componentDidUpdate 可以xiugaiDOM
   - ReactDOM.unmountComponentAtNode(document.getElementById()) 卸载
-  - componentWillUnmout
+  - componentWillUnmout 删除组件之前进行清理操作，比如计时器和事件监听器
 - 新
   - 不建议用的钩子,前面加UNSAFE_
     - UNSAFE_componentWillUpdate
@@ -1047,8 +1150,9 @@ try {
   }
 ```
 # React 路由
-## SPA
-- 单页 web 应用
+## SPA（single-page application）
+- 单页应用,是一种网络应用程序或网站的模型
+  - 网络应用程序是一种使用网页浏览器在互联网或企业内部网上操作的应用软件
 - 整个应用只有一个完整页面
 - 点击页面中的链接不会刷新页面，只会做页面局部更新
 ## 路由
@@ -1304,6 +1408,10 @@ yarn add react-app-rewired customize-cra
 ***babel-plugin-import 是一个用于按需加载组件代码和样式的 babel 插件***
 
 antd 修改样式、自定义主题，安装less，修改config-overrides.js; 如果不成功，试着修改less版本到文档相对的版本
+# Flux
+Flux是架构思想, 解决软件的架构问题，和MVC是同一类东西，但是更清晰简单。  
+Facebook Flux是用来构建客户端Web应用的应用框架，它利用**单向数据流**的方式来组合React中的视图组件。  
+
 # Redux
 redux_test 文件夹中
 - $\color{red}{状态管理}$ 的 JS库
@@ -1511,9 +1619,6 @@ export default createStore(allRedecer, composeWithDevTools(applyMiddleware(thunk
 2. 若A函数返回的返回值是一个函数，那么A可以称为高阶函数
   - 常见的有：Promise， setTimeout， setInterval， Array.map
   - 函数柯里化： 通过函数调用返回函数，实现多次接收参数最后统一处理的函数编码形式。
-# Flux
-Flux是架构思想, 解决软件的架构问题，和MVC是同一类东西，但是更清晰简单。  
-Facebook Flux是用来构建客户端Web应用的应用框架，它利用**单向数据流**的方式来组合React中的视图组件。  
 
 # 扩展
 ## setState更新状态的2种写法
@@ -1536,7 +1641,11 @@ Facebook Flux是用来构建客户端Web应用的应用框架，它利用**单�
 this.setState((state, props) => {
   return {title: state.title + '1'}
 }, ()=> {console.log('改变后更新显示')})
+
+
 ```
+
+
 ------
 
 ## 2. lazyLoad
@@ -1559,6 +1668,9 @@ this.setState((state, props) => {
 ---------------
 
 ## 3. Hooks
+- 高阶组件为了复用，导致代码层级复杂
+- 生命周期的复杂
+- 写成function组件，无状态组件，应为需要状态，又改成class
 
 ### 1. React Hook/Hooks是什么?
 
@@ -1620,7 +1732,7 @@ index.js 暴露root
 组件中用root.unmount()销毁组件
 ```
 
-#### 5. Ref Hook
+### 5. Ref Hook
 
 ```
 (1). Ref Hook可以在函数组件中存储/查找组件内的标签或任意其它数据
@@ -1631,56 +1743,23 @@ xxx.current
 可以用于父组件调用子组件方法，forwardRef()
 ```
 ------
-## 4. Fragment
-
+## 标签无包裹 Fragment
+无标签包裹
 ### 使用
 
 	<Fragment key={}><Fragment>
 	<></>
   key 参与遍历需要
 包一层隐藏
-## 5. Context
+## useCallback 记忆函数
+防止应为组件重新渲染，导致方法被重新创建，起到缓存作用，只有第二个参数变化了，才重新声明一次
+```javascript
+var handleClick = useCallback(() => {
+  console.log(name)
+}, [name])
+<button onClick></button>
 
-### 理解
-
-> 一种组件间通信方式, 常用于【祖组件】与【后代组件】间通信
-
-### 使用
-
-```js
-1) 创建Context容器对象：
-	const XxxContext = React.createContext()  
-	
-2) 渲染子组时，外面包裹xxxContext.Provider, 通过value属性给后代组件传递数据：
-	<xxxContext.Provider value={数据}>
-		子组件
-    </xxxContext.Provider>
-    
-3) 后代组件读取数据：
-
-	//第一种方式:仅适用于类组件 
-	static contextType = xxxContext  // 声明接收context
-	this.context // 读取context中的value数据
-	  
-	//第二种方式: 函数组件与类组件都可以
-	  <xxxContext.Consumer>
-	    {
-	      value => ( // value就是context中的value数据
-	        要显示的内容
-	      )
-	    }
-	  </xxxContext.Consumer>
 ```
-
-### 注意
-
-	在应用开发中一般不用context, 一般都用它的封装react插件
-
-<hr/>
-
-
-
-
 
 # 打包
 ```
@@ -1800,6 +1879,8 @@ function AA(){
 ```
 ## vue tag标签路由封装
 useLocation() 获取pathName 对比一下
+实现vue中的tag，在react中Link和NavLink输出的都是a标签，vue中有封装好的tag可以转化成想要的标签。  
+useNavigate 返回一个函数用来实现编程式导航。
 ## 使用插件 better-scroll
 forwardRef
 HOC高阶函数嵌套 

@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import {connect} from "react-redux"
-import {createAdd, createSubstract, createAsyceAdd} from '../../redux/action/count'
+// import {createAdd, createSubstract, createAsyceAdd} from '../../redux/action/count'
+import * as CreateOperation from '../../redux/action/count'
 
 class Count extends Component {
   increase = () => {
@@ -44,8 +45,8 @@ class Count extends Component {
 export default connect(
   state => ({count: state.sum, personSum: state.personAdd.length}), // 这里不能写定值,要写state传入对象,不然会导致无法检测state状态
   {
-    add:createAdd,
-    substract:createSubstract,
-    asyncADD: createAsyceAdd
+    add:CreateOperation.createAdd,
+    substract:CreateOperation.createSubstract,
+    asyncADD: CreateOperation.createAsyceAdd
   }
 )(Count)
