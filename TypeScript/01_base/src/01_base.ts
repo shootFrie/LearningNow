@@ -1,5 +1,5 @@
 // console.log('Hello');
-function greeting () {
-  console.log('Hello')
-}
-greeting()
+// function greeting () {
+//   console.log('Hello')
+// }
+// greeting()
